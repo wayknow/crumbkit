@@ -24,50 +24,73 @@ Free, open-source cookie editor. View, edit, import & export cookies. Privacy sc
 
 ## Detailed Description
 
-CrumbKit is a privacy-first cookie editor for Chrome. View, edit, import, and export browser cookies — all locally, with zero network requests and zero tracking.
+**CrumbKit puts you back in control of your browser cookies.** Whether you're debugging a login flow, inspecting what trackers a site drops on you, or exporting cookies to share across tools — CrumbKit gives you the full picture and the tools to act on it.
 
-🔒 100% PRIVATE
+---
 
-• No data collection. No analytics. No telemetry.
-• All processing happens locally on your device.
-• Zero network requests — verifiable in Chrome DevTools.
-• MIT open source — anyone can audit the code.
+### 🎯 WHAT YOU CAN DO WITH CRUMBKIT
 
-✨ FEATURES
+**Debug authentication & sessions**
+Stuck on a login bug? View and edit session tokens, switch auth states, and test different user scenarios — all in seconds.
 
-• View all cookies for the current site (name, value, domain, path, expiry)
-• Create, edit, and delete individual cookies
-• Batch delete all cookies with domain whitelist protection
-• Real-time search and filter
-• Export to JSON, Netscape (curl/wget), and cURL formats
-• Import from JSON and Netscape formats
-• Automatic cookie classification (Essential, Functional, Analytics, Advertising, Social)
-• Privacy score (0–100) with color-coded gauge for every site
-• Domain whitelist — protect important cookies from bulk deletion
-• Undo support (Ctrl+Z, up to 50 actions)
-• Dark/light mode with system preference detection
-• Clean, fast UI — no animations, no bloat
+**Audit privacy & tracking**
+Every site you visit leaves crumbs. CrumbKit classifies every cookie into five categories — Essential, Functional, Analytics, Advertising, Social — and gives the site a privacy score from 0 to 100. You'll know instantly if a site is harmless or watching your every move.
 
-👥 WHO IS THIS FOR?
+**Export & import cookie sets**
+Share cookies between browsers, save test fixtures, or pipe them into curl and wget. Supports JSON, Netscape format, and cURL command export. Import from JSON or Netscape with one click.
 
-• Web developers debugging sessions and testing auth states
-• QA testers importing/exporting test cookie sets
-• Backend developers inspecting Set-Cookie headers
-• Security researchers auditing site cookie configurations and trackers
+**Clean up with confidence**
+Bulk-delete cookies but keep the ones you actually need. Set up a domain whitelist so login cookies for your bank, email, and tools survive cleanup. Every delete is undoable (Ctrl+Z, up to 50 actions).
 
-📦 EXPORT/IMPORT FORMATS
+**Search, edit, create — fast**
+Real-time search across all cookies on the current tab. Create or edit cookies right from the popup. No page reloads, no digging through Chrome settings.
 
-Export: JSON (.json), Netscape HTTP Cookie File (.txt — compatible with curl and wget), cURL command (.sh)
-Import: JSON, Netscape HTTP Cookie File
+---
 
-🛡️ PRIVACY SCORE
+### ✅ WHY INSTALL CRUMBKIT (AND NOT SOMETHING ELSE)
 
-CrumbKit automatically classifies every cookie and calculates a privacy score (0–100) for the current site. See at a glance how many trackers, ads, and analytics cookies are watching you.
+**🔒 Actually private. Verifiably.**
+CrumbKit makes **zero network requests** — period. Open Chrome DevTools and see for yourself. No analytics, no telemetry, no "error reporting," no phoning home. The most popular cookie editor was pulled from the store; its replacement was caught stealing Facebook credentials. With CrumbKit, the code is **MIT open source** — you don't have to trust us, you can read every line.
 
-🔑 OPEN SOURCE
+**💰 Completely free. No catch.**
+No Pro tier, no subscription, no ads, no "premium features" locked behind a paywall. Everything is free, forever. We make other developer tools (ClearJSON, SnapMark) — CrumbKit is our gift to the community.
 
-MIT licensed. Full source code available on GitHub. No surprises, no hidden code.
-github.com/wayknow/crumbkit
+**⚡ Fast, clean, modern.**
+Built from scratch for Manifest V3. Vanilla JavaScript — no bloated frameworks. Dark mode and light mode, system-aware. Under 85KB total.
+
+**🛡️ Privacy scoring built in.**
+CrumbKit doesn't just show you cookies — it tells you what they're doing. Powered by an offline classification engine with 101 known tracking domains. Color-coded scores make it obvious which sites respect your privacy and which don't.
+
+**🧠 Undo & whitelist — because mistakes happen.**
+Deleted the wrong cookie? Ctrl+Z. Accidentally wiped all cookies? Not if they were on your whitelist. These aren't luxury features — they're the safety net every cookie tool should have but none do.
+
+---
+
+### 👥 BUILT FOR
+
+| You are… | You need to… |
+|-----------|---------------|
+| **Web developer** | Debug sessions, switch auth states, test cookie behavior |
+| **QA engineer** | Import/export test cookie sets, reproduce bugs across environments |
+| **Backend developer** | Inspect Set-Cookie headers, verify cookie attributes |
+| **Security researcher** | Audit tracker counts, analyze cookie configurations |
+| **Privacy-conscious user** | See who's tracking you, clean up with a click |
+
+---
+
+### 🏷️ AT A GLANCE
+
+- ✅ View, create, edit, delete cookies
+- ✅ Batch delete with domain whitelist
+- ✅ Export: JSON, Netscape (curl/wget), cURL
+- ✅ Import: JSON, Netscape
+- ✅ Cookie classification (5 categories)
+- ✅ Privacy score 0–100 per site
+- ✅ Undo (Ctrl+Z, up to 50 actions)
+- ✅ Dark/light mode
+- ✅ Zero network requests
+- ✅ MIT open source — [github.com/wayknow/crumbkit](https://github.com/wayknow/crumbkit)
+- ✅ Under 85KB, no frameworks, no bloat
 
 ---
 
