@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A privacy-first cookie editor. Open source, zero tracking, no ads.",
   "author": "WayKnow",
-  "homepage_url": "https://github.com/wayknow/crumbkit",
+  "homepage_url": "https://wayknow.tech/crumbkit.html",
   "permissions": [
     "cookies",
     "storage",
