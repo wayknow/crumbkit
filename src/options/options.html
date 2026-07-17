@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrumbKit Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span class="logo">🍪</span>
+        <h1>CrumbKit</h1>
+      </div>
+      <p class="subtitle">Settings</p>
+    </header>
+
+    <main>
+      <!-- Theme -->
+      <section class="card">
+        <h2>Appearance</h2>
+        <div class="setting-row">
+          <label for="themeSelect">Theme</label>
+          <select id="themeSelect">
+            <option value="auto">System default</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Domain Whitelist -->
+      <section class="card">
+        <h2>Domain Whitelist</h2>
+        <p class="help-text">
+          Cookies from these domains will be preserved when you use "Delete All".
+          Useful for keeping login sessions on sites you trust.
+        </p>
+        <div class="add-domain-row">
+          <input type="text" id="newDomain" class="domain-input" placeholder="example.com" autocomplete="off">
+          <button id="btnAddDomain" class="btn btn-primary">Add</button>
+        </div>
+        <ul id="whitelistItems" class="whitelist-list">
+          <li class="empty-msg" id="emptyWhitelist">No domains added yet.</li>
+        </ul>
+      </section>
+
+      <!-- About -->
+      <section class="card">
+        <h2>About</h2>
+        <p class="help-text">
+          CrumbKit is a free, open-source cookie editor. No tracking, no ads, no data collection.
+          All processing happens locally on your device.
+        </p>
+        <p class="help-text">
+          Version 1.0.0 · <a href="https://github.com/wayknow/crumbkit" target="_blank">GitHub</a> · MIT License · <a href="mailto:support@wayknow.tech">support@wayknow.tech</a>
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

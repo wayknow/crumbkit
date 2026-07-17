@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "puppeteer": "^25.3.0"
+  },
+  "scripts": {
+    "test": "node test/test.mjs"
+  }
+}

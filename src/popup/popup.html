@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrumbKit</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="brand">
+        <span class="logo">🍪</span>
+        <h1>CrumbKit</h1>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-btn" title="Toggle dark/light mode" aria-label="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+    <!-- Privacy Score -->
+    <div class="privacy-score-row">
+      <div class="score-circle" id="scoreCircle" title="Privacy Score">
+        <svg viewBox="0 0 36 36" class="score-chart">
+          <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          <path class="score-fill" id="scoreFill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        </svg>
+        <span class="score-text" id="scoreText">--</span>
+      </div>
+      <div class="privacy-info">
+        <span class="domain-label" id="domainLabel" title="">example.com</span>
+        <span class="privacy-label" id="privacyLabel">Loading...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search & Actions -->
+  <div class="toolbar">
+    <div class="search-row">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search cookies..." autocomplete="off">
+      <button id="clearSearch" class="icon-btn search-clear" title="Clear search" style="display:none">✕</button>
+    </div>
+    <div class="action-row">
+      <button id="btnAdd" class="btn btn-primary" title="Add new cookie">+ Add</button>
+      <div class="dropdown">
+        <button id="btnExport" class="btn" title="Export cookies">↥ Export</button>
+        <div class="dropdown-menu" id="exportMenu">
+          <button data-format="json">JSON (.json)</button>
+          <button data-format="netscape">Netscape (.txt) — curl/wget</button>
+          <button data-format="curl">cURL command (.sh)</button>
+        </div>
+      </div>
+      <button id="btnImport" class="btn" title="Import cookies from file">↧ Import</button>
+      <button id="btnDeleteAll" class="btn btn-danger" title="Delete all cookies (respects whitelist)">✕ All</button>
+      <button id="btnUndo" class="btn btn-undo" title="Undo last action" disabled>↩</button>
+    </div>
+  </div>
+
+  <!-- Cookie List -->
+  <main class="cookie-list" id="cookieList">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🍪</div>
+      <p>No cookies found for this site.</p>
+      <p class="empty-hint">Try a different page or add a new cookie.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-row">
+      <span id="cookieCount">0 cookies</span>
+      <span id="trackerCount" class="tracker-count"></span>
+      <a id="feedbackLink" class="feedback-link" href="https://github.com/wayknow/crumbkit/issues/new" target="_blank" title="Suggest a feature or report a bug">💡 Feedback</a>
+    </div>
+    <div class="footer-promo">
+      <span class="promo-label">Clear Tools:</span>
+      <a href="https://wayknow.tech/clearjson.html" target="_blank" title="A trustworthy JSON viewer">ClearJSON</a>
+      <span class="promo-sep">·</span>
+      <a href="https://wayknow.tech/snapmark.html" target="_blank" title="Privacy-first screenshot & annotation tool">SnapMark</a>
+    </div>
+  </footer>
+
+  <!-- Hidden file input for import -->
+  <input type="file" id="importFileInput" accept=".json,.txt" style="display:none">
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

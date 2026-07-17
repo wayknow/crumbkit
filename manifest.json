@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "CrumbKit",
+  "version": "1.0.0",
+  "description": "A privacy-first cookie editor. Open source, zero tracking, no ads.",
+  "author": "WayKnow",
+  "homepage_url": "https://github.com/wayknow/crumbkit",
+  "permissions": [
+    "cookies",
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "CrumbKit",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "src/options/options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
