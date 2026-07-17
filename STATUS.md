@@ -1,10 +1,12 @@
 # CrumbKit — Project Status
 
-> Last updated: 2026-07-17（从 CookieClear 代码库 fork 出来，全新品牌、全新 CWS item。CookieClear 旧 item 因 CWS spam 政策被屏蔽申诉中。）
+> Last updated: 2026-07-17
 
 ---
 
-## Current State: Ready for CWS Submission 🚀
+## Current State: CWS Review Pending ⏳
+
+**v1.0.0 submitted to Chrome Web Store on 2026-07-17.** Awaiting review.
 
 **This is a fresh project** — new name ("CrumbKit"), new extension ID, no CWS history.
 The codebase is derived from CookieClear but has been fully rebranded.
@@ -18,6 +20,13 @@ The appeal on the old item is still pending, but this new project starts clean.
 - All branding, URLs, storage keys, and export headers use CrumbKit
 - No competitor names, no "replacement" wording — positioned purely on its own merits
 - Clean CWS submission from day one
+
+### What's New (2026-07-17)
+
+- **GitHub repo live:** [github.com/wayknow/crumbkit](https://github.com/wayknow/crumbkit)
+- **CWS submission submitted** with rewritten store listing emphasizing purpose and value proposition
+- **Permission justifications** documented for all 4 permissions + host_permissions
+- **Data usage declaration** completed for privacy tab
 
 ### What's Built
 
@@ -59,9 +68,23 @@ Run: `npm test`
 - [x] Screenshots regenerated
 - [x] `crumbkit-v1.0.0.zip` packaged
 - [x] All 76 tests passing
-- [ ] Create GitHub repo `wayknow/crumbkit` and push
+- [x] Create GitHub repo `wayknow/crumbkit` and push
 - [ ] Create website page `wayknow.tech/crumbkit.html`
-- [ ] Submit to CWS as new item
+- [x] Submit to CWS as new item
+
+---
+
+## CWS Submission Record
+
+| Field | Detail |
+|-------|--------|
+| **Date submitted** | 2026-07-17 |
+| **Version** | 1.0.0 |
+| **Store listing** | `docs/store-listing.md` — rewritten to emphasize purpose & value prop |
+| **Single purpose** | View, edit, import, and export browser cookies with privacy scoring and classification — all local, zero network requests |
+| **Permissions** | `cookies`, `storage`, `activeTab`, `tabs` + `<all_urls>` — all justified |
+| **Data usage** | No collection, no transmission, no third-party sharing |
+| **Status** | Awaiting review ⏳ |
 
 ---
 
@@ -69,6 +92,7 @@ Run: `npm test`
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-07-17 | **CWS first submission** | Submitted with rewritten store listing, all permissions justified, data usage declared. |
 | 2026-07-17 | **Create CrumbKit as a new project** | CookieClear CWS item is blocked with appeal pending. New brand, new item ID, clean submission. Codebase is proven (76 tests passing, all features working). |
 | 2026-07-06 | **Free only, no Pro tier** | Market research: no validated paid demand in cookie editor category. Role is acquisition for ClearJSON/SnapMark. |
 | 2026-07-06 | **Vanilla JS, no framework** | Extension size < 85KB achieved. No build step needed. |
