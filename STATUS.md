@@ -4,11 +4,12 @@
 
 ---
 
-## Current State: CWS Review Pending ⏳
+## Current State: Published ✅
 
-**v1.0.0 submitted to Chrome Web Store on 2026-07-17.** Awaiting review.
+**v1.0.0 published on Chrome Web Store — 2026-07-20.**
+[CWS Listing](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)
 
-**2026-07-20:** CookieClear appeal got a response — spam block lifted, but `tabs` permission flagged as unused. We proactively applied the same fix to CrumbKit (`tabs` removed from manifest, now 3 permissions) while waiting for the current review to complete.
+**2026-07-20:** CookieClear appeal got a response — spam block lifted, but `tabs` permission flagged as unused. We proactively applied the same fix to CrumbKit (`tabs` removed from manifest, now 3 permissions). The submitted version (with `tabs`) passed review regardless. New .zip with `tabs` removed is ready for the next update.
 
 **This is a fresh project** — new name ("CrumbKit"), new extension ID, no CWS history.
 The codebase is derived from CookieClear but has been fully rebranded.
@@ -86,7 +87,7 @@ Run: `npm test`
 | **Single purpose** | View, edit, import, and export browser cookies with privacy scoring and classification — all local, zero network requests |
 | **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` — all justified（2026-07-20: `tabs` 已移除，等审核结果再上传更新包）|
 | **Data usage** | No collection, no transmission, no third-party sharing |
-| **Status** | Awaiting review ⏳（当前提交仍含 `tabs`，审核中无法更换 .zip。若被拒直接上传新包即可）|
+| **Status** | ✅ Published 2026-07-20（https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl）|
 
 ---
 
@@ -102,3 +103,4 @@ Run: `npm test`
 | 2026-07-06 | **Bundled tracking list** | Offline classification. Zero network requests — verifiable by anyone. |
 
 | 2026-07-20 | **Proactively remove `tabs` permission** | CookieClear appeal response flagged unused `tabs` permission. Applied same fix to CrumbKit preemptively — `activeTab` already covers the single `chrome.tabs.query` call. Updated .zip ready if needed.|
+| 2026-07-20 | **Published on CWS!** | v1.0.0 approved and published same day. [CWS link](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl). CookieClear → CrumbKit rebrand complete. |
