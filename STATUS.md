@@ -1,12 +1,14 @@
 # CrumbKit — Project Status
 
-> Last updated: 2026-07-17
+> Last updated: 2026-07-20
 
 ---
 
 ## Current State: CWS Review Pending ⏳
 
 **v1.0.0 submitted to Chrome Web Store on 2026-07-17.** Awaiting review.
+
+**2026-07-20:** CookieClear appeal got a response — spam block lifted, but `tabs` permission flagged as unused. We proactively applied the same fix to CrumbKit (`tabs` removed from manifest, now 3 permissions) while waiting for the current review to complete.
 
 **This is a fresh project** — new name ("CrumbKit"), new extension ID, no CWS history.
 The codebase is derived from CookieClear but has been fully rebranded.
@@ -82,9 +84,9 @@ Run: `npm test`
 | **Version** | 1.0.0 |
 | **Store listing** | `docs/store-listing.md` — rewritten to emphasize purpose & value prop |
 | **Single purpose** | View, edit, import, and export browser cookies with privacy scoring and classification — all local, zero network requests |
-| **Permissions** | `cookies`, `storage`, `activeTab`, `tabs` + `<all_urls>` — all justified |
+| **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` — all justified（2026-07-20: `tabs` 已移除，等审核结果再上传更新包）|
 | **Data usage** | No collection, no transmission, no third-party sharing |
-| **Status** | Awaiting review ⏳ |
+| **Status** | Awaiting review ⏳（当前提交仍含 `tabs`，审核中无法更换 .zip。若被拒直接上传新包即可）|
 
 ---
 
@@ -99,8 +101,4 @@ Run: `npm test`
 | 2026-07-06 | **MIT License** | Trust foundation — open source code is auditable by anyone. |
 | 2026-07-06 | **Bundled tracking list** | Offline classification. Zero network requests — verifiable by anyone. |
 
-### CWS Review Feedback (2026-07-17)
-
-- **Feedback:** `tabs` permission is not required for the properties used in the code
-- **Fix:** Removed `tabs` from manifest permissions (redundant with `activeTab` for the `chrome.tabs.query({ active: true, currentWindow: true })` usage)
-- **Status:** Fixed and ready to resubmit
+| 2026-07-20 | **Proactively remove `tabs` permission** | CookieClear appeal response flagged unused `tabs` permission. Applied same fix to CrumbKit preemptively — `activeTab` already covers the single `chrome.tabs.query` call. Updated .zip ready if needed.|
