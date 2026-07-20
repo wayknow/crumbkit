@@ -98,3 +98,9 @@ Run: `npm test`
 | 2026-07-06 | **Vanilla JS, no framework** | Extension size < 85KB achieved. No build step needed. |
 | 2026-07-06 | **MIT License** | Trust foundation — open source code is auditable by anyone. |
 | 2026-07-06 | **Bundled tracking list** | Offline classification. Zero network requests — verifiable by anyone. |
+
+### CWS Review Feedback (2026-07-17)
+
+- **Feedback:** `tabs` permission is not required for the properties used in the code
+- **Fix:** Removed `tabs` from manifest permissions (redundant with `activeTab` for the `chrome.tabs.query({ active: true, currentWindow: true })` usage)
+- **Status:** Fixed and ready to resubmit

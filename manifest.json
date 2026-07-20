@@ -8,8 +8,7 @@
   "permissions": [
     "cookies",
     "storage",
-    "activeTab",
-    "tabs"
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"
