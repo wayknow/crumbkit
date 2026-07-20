@@ -1,12 +1,12 @@
 # CrumbKit — 隐私优先的浏览器 Cookie 编辑器
 
-> Chrome 扩展（MV3），MIT 开源。CWS 审核中。
+> Chrome 扩展（MV3），MIT 开源。已上架 CWS。
 
 ## 项目概览
 
 - **技术栈**：Vanilla JS + ES modules，零框架依赖，CSS 变量驱动主题
 - **测试**：`npm test`（76 个测试，Puppeteer e2e + Node 原生 test runner）
-- **当前状态**：v1.0.0 全新项目，准备提交 CWS（从 CookieClear 代码库衍生，全新品牌）
+- **当前状态**：v1.0.0 已发布 CWS（从 CookieClear 代码库衍生，全新品牌）
 - **详细状态**：[STATUS.md](STATUS.md)
 - **产品规格**：[PRODUCT.md](PRODUCT.md)
 - **商店文案**：[docs/store-listing.md](docs/store-listing.md)

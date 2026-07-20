@@ -4,6 +4,8 @@
 
 CrumbKit is a Manifest V3 Chrome extension that lets you view, edit, import, export, and manage browser cookies. All processing happens locally on your device — zero network requests, zero tracking.
 
+**[Install from Chrome Web Store](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)**
+
 ## Why CrumbKit
 
 - **Reliable import/export** — JSON, Netscape, and cURL formats with robust parsing

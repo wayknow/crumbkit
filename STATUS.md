@@ -35,7 +35,7 @@ The appeal on the old item is still pending, but this new project starts clean.
 
 | Module | Status | Notes |
 |--------|:------:|-------|
-| Manifest V3 | ✅ | 4 permissions, popup + options + service worker |
+| Manifest V3 | ✅ | 3 permissions (cookies, storage, activeTab), popup + options + service worker |
 | Cookie CRUD | ✅ | View, add, edit, delete individual and bulk |
 | Import | ✅ | JSON and Netscape format parsing |
 | Export | ✅ | JSON, Netscape (curl/wget), cURL command |
@@ -101,6 +101,5 @@ Run: `npm test`
 | 2026-07-06 | **Vanilla JS, no framework** | Extension size < 85KB achieved. No build step needed. |
 | 2026-07-06 | **MIT License** | Trust foundation — open source code is auditable by anyone. |
 | 2026-07-06 | **Bundled tracking list** | Offline classification. Zero network requests — verifiable by anyone. |
-
 | 2026-07-20 | **Proactively remove `tabs` permission** | CookieClear appeal response flagged unused `tabs` permission. Applied same fix to CrumbKit preemptively — `activeTab` already covers the single `chrome.tabs.query` call. Updated .zip ready if needed.|
 | 2026-07-20 | **Published on CWS!** | v1.0.0 approved and published same day. [CWS link](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl). CookieClear → CrumbKit rebrand complete. |
