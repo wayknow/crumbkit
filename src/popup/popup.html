@@ -40,7 +40,7 @@
   <div class="toolbar">
     <div class="search-row">
       <input type="text" id="searchInput" class="search-input" placeholder="Search cookies..." autocomplete="off">
-      <button id="clearSearch" class="icon-btn search-clear" title="Clear search" style="display:none">✕</button>
+      <button id="clearSearch" class="icon-btn search-clear" title="Clear search" hidden>✕</button>
     </div>
     <div class="action-row">
       <button id="btnAdd" class="btn btn-primary" title="Add new cookie">+ Add</button>
@@ -83,7 +83,7 @@
   </footer>
 
   <!-- Hidden file input for import -->
-  <input type="file" id="importFileInput" accept=".json,.txt" style="display:none">
+  <input type="file" id="importFileInput" accept=".json,.txt" hidden>
 
   <script type="module" src="popup.js"></script>
 </body>

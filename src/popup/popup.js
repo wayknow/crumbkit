@@ -602,14 +602,14 @@ function setupEventListeners() {
   // Search
   dom.searchInput.addEventListener('input', (e) => {
     searchQuery = e.target.value.trim();
-    dom.clearSearch.style.display = searchQuery ? 'flex' : 'none';
+    dom.clearSearch.hidden = !searchQuery;
     applySearchFilter();
     renderCookieList();
   });
   dom.clearSearch.addEventListener('click', () => {
     searchQuery = '';
     dom.searchInput.value = '';
-    dom.clearSearch.style.display = 'none';
+    dom.clearSearch.hidden = true;
     applySearchFilter();
     renderCookieList();
   });
