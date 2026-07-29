@@ -1,15 +1,23 @@
 # CrumbKit — Project Status
 
-> Last updated: 2026-07-20
+> Last updated: 2026-07-29
 
 ---
 
 ## Current State: Published ✅
 
-**v1.0.0 published on Chrome Web Store — 2026-07-20.**
+**v1.0.0 published on Chrome Web Store — 2026-07-20. v1.0.1 submitted — 2026-07-29.**
 [CWS Listing](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)
 
-**2026-07-20:** CookieClear appeal got a response — spam block lifted, but `tabs` permission flagged as unused. We proactively applied the same fix to CrumbKit (`tabs` removed from manifest, now 3 permissions). The submitted version (with `tabs`) passed review regardless. New .zip with `tabs` removed is ready for the next update.
+### v1.0.1 (2026-07-29) — Design System Alignment
+
+- **Design system** added to CLAUDE.md — visual specs, component specs, animation, accessibility
+- **UI audit** against design system completed and all issues fixed:
+  - P0: `:focus-visible` outlines on all interactive elements, popup width 480→400px
+  - P1: Dark theme colors (`#0F0F0F`/`#1A1A1A`/`#242424`), 4px spacing base, border-radius tokens, primary `#3B82F6`, inline styles → `hidden` attr
+  - P2: Font stack `system-ui`, `prefers-color-scheme` & `prefers-reduced-motion` media queries
+- **Cross-promotion** added to options page (ClearJSON + SnapMark referral links)
+- **`tabs` permission** removed from manifest (proactive fix from CookieClear feedback)
 
 **This is a fresh project** — new name ("CrumbKit"), new extension ID, no CWS history.
 The codebase is derived from CookieClear but has been fully rebranded.
@@ -30,6 +38,12 @@ The appeal on the old item is still pending, but this new project starts clean.
 - **CWS submission submitted** with rewritten store listing emphasizing purpose and value proposition
 - **Permission justifications** documented for all 4 permissions + host_permissions
 - **Data usage declaration** completed for privacy tab
+
+### What's New (2026-07-29)
+
+- **Design system alignment:** all UI updated to match design token spec (colors, spacing, radii, shadows)
+- **Accessibility:** focus-visible outlines on all interactive elements, prefers-reduced-motion support
+- **Cross-promotion:** ClearJSON + SnapMark links in both popup footer and options page
 
 ### What's Built
 
@@ -72,7 +86,7 @@ Run: `npm test`
 - [x] `crumbkit-v1.0.0.zip` packaged
 - [x] All 76 tests passing
 - [x] Create GitHub repo `wayknow/crumbkit` and push
-- [ ] Create website page `wayknow.tech/crumbkit.html`
+- [x] Create website page `wayknow.tech/crumbkit.html`
 - [x] Submit to CWS as new item
 
 ---
@@ -89,6 +103,16 @@ Run: `npm test`
 | **Data usage** | No collection, no transmission, no third-party sharing |
 | **Status** | ✅ Published 2026-07-20（https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl）|
 
+### v1.0.1 Update
+
+| Field | Detail |
+|-------|--------|
+| **Date submitted** | 2026-07-29 |
+| **Version** | 1.0.1 |
+| **Changes** | Design system alignment (colors, spacing, radii, focus-visible, prefers-color-scheme), cross-promo in options, inline styles removed, `tabs` permission removed |
+| **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` |
+| **Status** | Awaiting review ⏳ |
+
 ---
 
 ## Decision Log
@@ -103,3 +127,6 @@ Run: `npm test`
 | 2026-07-06 | **Bundled tracking list** | Offline classification. Zero network requests — verifiable by anyone. |
 | 2026-07-20 | **Proactively remove `tabs` permission** | CookieClear appeal response flagged unused `tabs` permission. Applied same fix to CrumbKit preemptively — `activeTab` already covers the single `chrome.tabs.query` call. Updated .zip ready if needed.|
 | 2026-07-20 | **Published on CWS!** | v1.0.0 approved and published same day. [CWS link](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl). CookieClear → CrumbKit rebrand complete. |
+| 2026-07-29 | **Design system added to CLAUDE.md** | Comprehensive visual spec (colors, spacing, radii, animation, accessibility, component specs). All future UI work must follow this system. |
+| 2026-07-29 | **UI audited and aligned to design system** | Full audit found 13 issues across P0/P1/P2. All fixed: focus-visible outlines, 4px spacing base, dark theme colors, border-radius tokens, system-ui font stack, prefers-color-scheme/reduced-motion. |
+| 2026-07-29 | **Stayed free (rejected paid pivot)** | Evaluated 30-day trial + $5 lifetime model vs competitors (CookieJar $4.99/mo, Cookie Editor $3/mo). Decided to keep free — cookie editor market has no validated paid demand, and CrumbKit's role is acquisition for ClearJSON/SnapMark. |
