@@ -1,12 +1,12 @@
 # CrumbKit — Project Status
 
-> Last updated: 2026-07-29
+> Last updated: 2026-07-30
 
 ---
 
 ## Current State: Published ✅
 
-**v1.0.0 published on Chrome Web Store — 2026-07-20. v1.0.1 submitted — 2026-07-29.**
+**v1.0.0 published 2026-07-20. v1.0.1 published 2026-07-29.**
 [CWS Listing](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)
 
 ### v1.0.1 (2026-07-29) — Design System Alignment
@@ -111,7 +111,7 @@ Run: `npm test`
 | **Version** | 1.0.1 |
 | **Changes** | Design system alignment (colors, spacing, radii, focus-visible, prefers-color-scheme), cross-promo in options, inline styles removed, `tabs` permission removed |
 | **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` |
-| **Status** | Awaiting review ⏳ |
+| **Status** | ✅ Published 2026-07-29 |
 
 ---
 
@@ -129,4 +129,5 @@ Run: `npm test`
 | 2026-07-20 | **Published on CWS!** | v1.0.0 approved and published same day. [CWS link](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl). CookieClear → CrumbKit rebrand complete. |
 | 2026-07-29 | **Design system added to CLAUDE.md** | Comprehensive visual spec (colors, spacing, radii, animation, accessibility, component specs). All future UI work must follow this system. |
 | 2026-07-29 | **UI audited and aligned to design system** | Full audit found 13 issues across P0/P1/P2. All fixed: focus-visible outlines, 4px spacing base, dark theme colors, border-radius tokens, system-ui font stack, prefers-color-scheme/reduced-motion. |
+| 2026-07-30 | **v1.0.1 approved on CWS** | Review passed. Design system alignment, accessibility fixes, and cross-promo now live. |
 | 2026-07-29 | **Stayed free (rejected paid pivot)** | Evaluated 30-day trial + $5 lifetime model vs competitors (CookieJar $4.99/mo, Cookie Editor $3/mo). Decided to keep free — cookie editor market has no validated paid demand, and CrumbKit's role is acquisition for ClearJSON/SnapMark. |
