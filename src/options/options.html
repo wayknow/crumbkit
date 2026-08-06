@@ -46,6 +46,64 @@
         </ul>
       </section>
 
+      <!-- Auto-Cleanup Rules -->
+      <section class="card">
+        <h2>Auto-Cleanup Rules</h2>
+        <p class="help-text">
+          Automatically delete cookies on a schedule based on domain, category, and age.
+          Cleanup runs in the background even when the popup is closed.
+        </p>
+        <div class="rule-list" id="ruleList">
+          <li class="empty-msg" id="emptyRules">No rules configured.</li>
+        </div>
+        <button id="btnAddRule" class="btn btn-primary">+ Add Rule</button>
+
+        <!-- Rule Form (hidden until Add/Edit clicked) -->
+        <div class="rule-form" id="ruleForm" hidden>
+          <div class="form-row">
+            <label for="ruleName">Name</label>
+            <input type="text" id="ruleName" class="rule-input" placeholder="My cleanup rule" autocomplete="off">
+          </div>
+          <div class="form-row">
+            <label for="ruleDomains">Domains</label>
+            <input type="text" id="ruleDomains" class="rule-input" placeholder="example.com, doubleclick.net (leave empty for all)" autocomplete="off">
+          </div>
+          <p class="help-text form-hint">Comma-separated, leave empty to match all domains.</p>
+          <div class="form-row">
+            <label>Categories</label>
+            <div class="category-checks">
+              <label class="check-label"><input type="checkbox" value="advertising"> Advertising</label>
+              <label class="check-label"><input type="checkbox" value="analytics"> Analytics</label>
+              <label class="check-label"><input type="checkbox" value="social"> Social</label>
+              <label class="check-label"><input type="checkbox" value="functional"> Functional</label>
+              <label class="check-label"><input type="checkbox" value="essential"> Essential</label>
+              <label class="check-label"><input type="checkbox" value="unknown"> Unknown</label>
+            </div>
+          </div>
+          <p class="help-text form-hint">Leave all unchecked to match all categories.</p>
+          <div class="form-row">
+            <label for="ruleMaxAge">Max Age (hours)</label>
+            <input type="number" id="ruleMaxAge" class="rule-input rule-input-short" value="0" min="0" step="1">
+          </div>
+          <p class="help-text form-hint">Deletes cookies with expiration beyond this threshold. 0 = no age limit.</p>
+          <div class="form-row">
+            <label for="ruleSchedule">Schedule</label>
+            <select id="ruleSchedule" class="rule-select">
+              <option value="15">Every 15 minutes</option>
+              <option value="30">Every 30 minutes</option>
+              <option value="60" selected>Every hour</option>
+              <option value="360">Every 6 hours</option>
+              <option value="720">Every 12 hours</option>
+              <option value="1440">Every day</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button id="btnRuleCancel" class="btn">Cancel</button>
+            <button id="btnRuleSave" class="btn btn-primary">Save Rule</button>
+          </div>
+        </div>
+      </section>
+
       <!-- About -->
       <section class="card">
         <h2>About</h2>
@@ -54,7 +112,7 @@
           All processing happens locally on your device.
         </p>
         <p class="help-text">
-          Version 1.1.0 · <a href="https://github.com/wayknow/crumbkit" target="_blank">GitHub</a> · MIT License · <a href="mailto:support@wayknow.tech">support@wayknow.tech</a>
+          Version 1.2.0 · <a href="https://github.com/wayknow/crumbkit" target="_blank">GitHub</a> · MIT License · <a href="mailto:support@wayknow.tech">support@wayknow.tech</a>
         </p>
         <div class="promo-line">
           <span class="promo-label">Clear Tools:</span>
@@ -62,6 +120,9 @@
           <span class="promo-sep">·</span>
           <a href="https://wayknow.tech/snapmark.html" target="_blank" title="Privacy-first screenshot & annotation tool">SnapMark</a>
         </div>
+        <p class="help-text feedback-link">
+          💡 <a href="https://github.com/wayknow/crumbkit/issues/new" target="_blank" title="Suggest a feature or report a bug">Suggest a Feature</a>
+        </p>
       </section>
     </main>
   </div>

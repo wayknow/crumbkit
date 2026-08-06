@@ -80,17 +80,17 @@ Three pillars:
 
 ## Features
 
-### Current (v1.1.0)
+### Current (v1.2.0)
 
 ```
 ✅ View all cookies for the current site (name, value, domain, path, expiry)
 ✅ Compact table view with column headers
 ✅ Create / edit / delete individual cookies
-✅ Multi-select with batch delete
+✅ Multi-select with batch delete + bulk edit (domain, path, secure, httpOnly, sameSite)
 ✅ Batch delete all cookies (respects domain whitelist)
 ✅ One-click copy cookie value to clipboard
 ✅ Real-time search and filter
-✅ Export to JSON, Netscape (curl/wget), and cURL formats
+✅ Export to JSON, Netscape (curl/wget), cURL, CSV, and Puppeteer script formats
 ✅ Import from JSON and Netscape formats
 ✅ Cookie Profiles — save and restore cookie sets
 ✅ Cookie auto-classification (Essential / Functional / Analytics / Advertising / Social)
@@ -99,6 +99,9 @@ Three pillars:
 ✅ Undo support (Ctrl+Z, up to 50 actions)
 ✅ Dark / light mode
 ✅ Side panel support
+✅ Scheduled auto-cleanup rules (by domain, category, and age)
+✅ Set-Cookie request interceptor (monitor and one-click add cookies)
+✅ Suggest a Feature link (GitHub Issues)
 ✅ Zero network requests, fully local processing
 ✅ MIT open source
 ```
@@ -106,11 +109,8 @@ Three pillars:
 ### Future (user-feedback driven)
 
 ```
-☐ "Suggest a Feature" button to collect real user demand
-☐ Scheduled auto-cleanup rules
-☐ CSV / Puppeteer script export
-☐ Set-Cookie request interceptor
-☐ Bulk edit operations
+☐ CSV / Puppeteer script import
+☐ Set-Cookie header export
 ```
 
 ### Won't Do

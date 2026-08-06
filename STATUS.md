@@ -4,9 +4,9 @@
 
 ---
 
-## Current State: Published ✅
+## Current State: v1.2.0 Development ✅
 
-**v1.0.0 published 2026-07-20. v1.0.1 published 2026-07-29.**
+**v1.0.0 published 2026-07-20. v1.0.1 published 2026-07-29. v1.1.0 under CWS review.**
 [CWS Listing](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)
 
 ### v1.0.1 (2026-07-29) — Design System Alignment
@@ -123,9 +123,25 @@ Run: `npm test`
 | **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` |
 | **Status** | Submitting to CWS ⏳ |
 
+### v1.2.0 Update
+
+| Field | Detail |
+|-------|--------|
+| **Date** | 2026-08-06 |
+| **Version** | 1.2.0 |
+| **Changes** | CSV + Puppeteer export, bulk edit operations, scheduled auto-cleanup rules (alarms + notifications), Set-Cookie request interceptor (webRequest), Suggest a Feature link |
+| **Permissions** | `cookies`, `storage`, `activeTab`, `alarms`, `notifications`, `webRequest` + `<all_urls>` |
+| **Status** | Development 🚧 |
+
 ---
 
 ## Decision Log
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-08-06 | **v1.2.0: All 5 planned features** | Implemented all remaining PRODUCT.md features: CSV/Puppeteer export, bulk edit, auto-cleanup rules, Set-Cookie interceptor, feedback link. New permissions: alarms, notifications, webRequest. |
+| 2026-08-06 | **Auto-cleanup: name-based classification in SW** | Service worker uses inline classification (same regex patterns as classify.js) to avoid loading tracking-domains.json in the background. Domain-based matching available when adding rules. |
+| 2026-08-06 | **Interceptor: chrome.storage.session for transient data** | Intercepted cookies stored in chrome.storage.session (10MB, cleared on browser restart). Capped at 50 entries. Survives service worker termination. |
 
 | Date | Decision | Rationale |
 |------|----------|-----------|

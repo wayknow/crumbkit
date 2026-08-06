@@ -40,9 +40,37 @@ async function test(name, fn) {
 // ═══════════════════════════════════════════════════════════════
 
 // Mock chrome API
+const mockStorage = new Map();
 globalThis.chrome = {
   runtime: {
     getURL: (path) => `file://${EXT_PATH}/${path}`
+  },
+  storage: {
+    local: {
+      get: async (keys) => {
+        const result = {};
+        if (Array.isArray(keys)) {
+          for (const k of keys) result[k] = mockStorage.get(k);
+        } else if (typeof keys === 'string') {
+          result[keys] = mockStorage.get(keys);
+        } else if (keys && typeof keys === 'object') {
+          for (const k of Object.keys(keys)) result[k] = mockStorage.get(k);
+        }
+        return result;
+      },
+      set: async (items) => {
+        for (const [k, v] of Object.entries(items)) {
+          mockStorage.set(k, v);
+        }
+      },
+      remove: async (keys) => {
+        if (typeof keys === 'string') {
+          mockStorage.delete(keys);
+        } else if (Array.isArray(keys)) {
+          for (const k of keys) mockStorage.delete(k);
+        }
+      }
+    }
   }
 };
 
@@ -202,6 +230,106 @@ async function runUnitTests() {
     assert(reimported[0].secure === true, 'round-trip: secure preserved');
     assert(reimported[0].sameSite === 'strict', 'round-trip: sameSite preserved');
     assert(reimported[1].session === true, 'round-trip: session preserved');
+  });
+  // ─── CSV Export ──────────────────────────────────────────────
+
+  await test('Export: toCSV produces RFC 4180 CSV', async () => {
+    const { toCSV } = await import(`${EXT_PATH}/src/utils/export.js`);
+
+    // Test with cookies containing commas and quotes
+    const cookies = [
+      { name: 'a', value: '1', domain: '.x.com', path: '/', secure: true, httpOnly: false, sameSite: 'lax', expirationDate: 1735689600, session: false },
+      { name: 'b', value: 'hello, world', domain: 'x.com', path: '/a', secure: false, httpOnly: true, sameSite: 'strict', expirationDate: null, session: true }
+    ];
+    const csv = toCSV(cookies);
+    const lines = csv.trim().split('\n');
+    assert(lines.length === 3, 'CSV has header + 2 data rows');
+    assert(lines[0] === 'name,value,domain,path,secure,httpOnly,sameSite,expirationDate,session', 'CSV header row correct');
+    assert(lines[2].includes('TRUE'), 'CSV session column has TRUE');
+    // Verify comma in value is escaped: the field must contain double quotes
+    assert(csv.includes('"hello, world"'), 'CSV wraps comma-containing value in double quotes');
+
+    // Test empty array
+    const empty = toCSV([]);
+    const emptyLines = empty.trim().split('\n');
+    assert(emptyLines.length === 1, 'CSV of empty array has only header');
+    assert(emptyLines[0].startsWith('name,'), 'CSV empty header starts with name');
+
+    // Test double quote escaping
+    const quoteCookies = [
+      { name: 'x', value: 'say "hello"', domain: '.c.com', path: '/', secure: false, httpOnly: false, sameSite: 'unspecified', expirationDate: null, session: true }
+    ];
+    const quoteCsv = toCSV(quoteCookies);
+    assert(quoteCsv.includes('"say ""hello"""'), 'CSV doubles embedded double quotes');
+  });
+
+  // ─── Puppeteer Export ────────────────────────────────────────
+
+  await test('Export: toPuppeteer generates valid JavaScript', async () => {
+    const { toPuppeteer } = await import(`${EXT_PATH}/src/utils/export.js`);
+    const cookies = [
+      { name: 'sess', value: 'abc', domain: '.example.com', path: '/', secure: true, httpOnly: true, sameSite: 'lax', expirationDate: null, session: true },
+      { name: 'persist', value: 'xyz', domain: '.example.com', path: '/', secure: false, httpOnly: false, sameSite: 'strict', expirationDate: 1735689600, session: false }
+    ];
+    const script = toPuppeteer(cookies, 'example.com');
+    assert(script.includes("const puppeteer = require('puppeteer');"), 'requires puppeteer');
+    assert(script.includes('page.setCookie'), 'calls page.setCookie');
+    assert(script.includes('sess'), 'includes session cookie name');
+    assert(script.includes('persist'), 'includes persistent cookie name');
+    assert(script.includes('1735689600'), 'includes expirationDate as expires');
+    assert(script.includes('example.com'), 'includes target domain');
+  });
+
+  // ─── Rules CRUD ──────────────────────────────────────────────
+
+  await test('Rules: createRule generates unique ID', async () => {
+    const { createRule, getRules, deleteRule } = await import(`${EXT_PATH}/src/utils/rules.js`);
+    const rule1 = await createRule({ name: 'Test 1', schedule: 60 });
+    const rule2 = await createRule({ name: 'Test 2', schedule: 60 });
+    assert(rule1.id !== rule2.id, 'rule IDs are unique');
+    assert(rule1.id.startsWith('r_'), 'rule ID starts with r_');
+    assert(rule1.name === 'Test 1', 'rule name preserved');
+    assert(rule1.enabled === true, 'rule enabled by default');
+    assert(rule1.schedule === 60, 'rule schedule preserved');
+
+    const rules = await getRules();
+    assert(rules.length >= 2, 'getRules returns created rules');
+    assert(rules.some(r => r.id === rule1.id), 'rule1 found in storage');
+
+    // Cleanup
+    await deleteRule(rule1.id);
+    await deleteRule(rule2.id);
+  });
+
+  await test('Rules: updateRule modifies fields', async () => {
+    const { createRule, updateRule, deleteRule } = await import(`${EXT_PATH}/src/utils/rules.js`);
+    const rule = await createRule({ name: 'Original', enabled: true, schedule: 60 });
+    const updated = await updateRule(rule.id, { name: 'Updated', enabled: false });
+    assert(updated !== null, 'updateRule returns rule');
+    assert(updated.name === 'Updated', 'name updated');
+    assert(updated.enabled === false, 'enabled updated');
+    assert(updated.id === rule.id, 'id preserved');
+    await deleteRule(rule.id);
+  });
+
+  await test('Rules: deleteRule removes rule', async () => {
+    const { createRule, getRules, deleteRule } = await import(`${EXT_PATH}/src/utils/rules.js`);
+    const rule = await createRule({ name: 'To Delete', schedule: 60 });
+    const deleted = await deleteRule(rule.id);
+    assert(deleted === true, 'deleteRule returns true');
+    const rules = await getRules();
+    assert(!rules.some(r => r.id === rule.id), 'rule removed from storage');
+  });
+
+  await test('Rules: markRuleExecuted updates lastRun', async () => {
+    const { createRule, getRules, markRuleExecuted, deleteRule } = await import(`${EXT_PATH}/src/utils/rules.js`);
+    const rule = await createRule({ name: 'Executed', schedule: 60 });
+    assert(rule.lastRun === null, 'lastRun starts null');
+    await markRuleExecuted(rule.id);
+    const rules = await getRules();
+    const updated = rules.find(r => r.id === rule.id);
+    assert(updated && updated.lastRun !== null, 'lastRun updated');
+    await deleteRule(rule.id);
   });
 }
 
@@ -465,6 +593,52 @@ async function runE2ETests() {
     // Clean up
     await client.send('Network.deleteCookies', { name: 'test_cc', url: testUrl });
     await page.close();
+  });
+
+  // v1.2.0 — Export dropdown options
+  await test('Export dropdown has CSV and Puppeteer options', async () => {
+    const page = await browser.newPage();
+    await page.goto(`chrome-extension://${extId}/src/popup/popup.html`, { waitUntil: 'domcontentloaded' });
+    const hasCSV = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('#exportMenu button')).some(b => b.dataset.format === 'csv');
+    });
+    const hasPuppeteer = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('#exportMenu button')).some(b => b.dataset.format === 'puppeteer');
+    });
+    assert(hasCSV, 'CSV export button exists');
+    assert(hasPuppeteer, 'Puppeteer export button exists');
+    await page.close();
+  });
+
+  // v1.2.0 — Options page: auto-cleanup section
+  await test('Options page has auto-cleanup section', async () => {
+    const page = await browser.newPage();
+    await page.goto(`chrome-extension://${extId}/src/options/options.html`, { waitUntil: 'domcontentloaded' });
+    const content = await page.evaluate(() => document.body.innerHTML);
+    assert(content.includes('Auto-Cleanup'), 'options page has Auto-Cleanup section');
+    assert(content.includes('Suggest a Feature'), 'options page has feedback link');
+    await page.close();
+  });
+
+  // v1.2.0 — Popup has bulk edit and intercept buttons
+  await test('Popup has bulk edit and interceptor buttons', async () => {
+    const page = await browser.newPage();
+    await page.goto(`chrome-extension://${extId}/src/popup/popup.html`, { waitUntil: 'domcontentloaded' });
+    const hasEditBtn = await page.evaluate(() => !!document.querySelector('#btnEditSelected'));
+    const hasInterceptBtn = await page.evaluate(() => !!document.querySelector('#btnInterceptToggle'));
+    assert(hasEditBtn, 'bulk edit button exists');
+    assert(hasInterceptBtn, 'intercept toggle button exists');
+    await page.close();
+  });
+
+  // v1.2.0 — New permissions in manifest
+  await test('manifest.json has v1.2.0 permissions', async () => {
+    const manifestPath = `${EXT_PATH}/manifest.json`;
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    assert(manifest.version === '1.2.0', 'version is 1.2.0');
+    assert(manifest.permissions.includes('alarms'), 'has alarms permission');
+    assert(manifest.permissions.includes('notifications'), 'has notifications permission');
+    assert(manifest.permissions.includes('webRequest'), 'has webRequest permission');
   });
 }
 

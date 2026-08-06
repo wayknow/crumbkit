@@ -806,6 +806,155 @@ body {
   }
 }
 
+/* ─── Bulk Edit Panel ─── */
+
+.bulk-edit-panel {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  padding: 8px 12px;
+}
+
+.bulk-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bulk-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bulk-edit-form .form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bulk-edit-form label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  width: 60px;
+  flex-shrink: 0;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.bulk-edit-form input[type="text"],
+.bulk-edit-form select {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 11px;
+  font-family: inherit;
+  outline: none;
+}
+
+.bulk-edit-form input:focus,
+.bulk-edit-form select:focus {
+  border-color: var(--primary);
+}
+
+.bulk-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* ─── Intercept Panel ─── */
+
+.intercept-panel {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.intercept-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 1;
+}
+
+.intercept-list {
+  padding: 0 12px 8px;
+}
+
+.intercept-empty {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 8px 0;
+  text-align: center;
+}
+
+.intercept-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 11px;
+}
+
+.intercept-item:last-child {
+  border-bottom: none;
+}
+
+.intercept-name {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.intercept-value {
+  flex: 1;
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.intercept-domain {
+  color: var(--primary);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.intercept-time {
+  color: var(--text-muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.btn-add-intercepted {
+  font-size: 9px !important;
+  padding: 2px 6px !important;
+  flex-shrink: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0s !important;

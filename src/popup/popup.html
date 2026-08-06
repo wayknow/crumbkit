@@ -48,14 +48,18 @@
         <button id="btnExport" class="btn" title="Export cookies">↥ Export</button>
         <div class="dropdown-menu" id="exportMenu">
           <button data-format="json">JSON (.json)</button>
+          <button data-format="csv">CSV (.csv)</button>
           <button data-format="netscape">Netscape (.txt) — curl/wget</button>
           <button data-format="curl">cURL command (.sh)</button>
+          <button data-format="puppeteer">Puppeteer Script (.js)</button>
         </div>
       </div>
       <button id="btnImport" class="btn" title="Import cookies from file">↧ Import</button>
       <button id="btnProfiles" class="btn" title="Cookie profiles">⚙ Profiles</button>
+      <button id="btnInterceptToggle" class="btn" title="Toggle cookie interception">📡 Intercept</button>
       <button id="btnDeleteAll" class="btn btn-danger" title="Delete all cookies (respects whitelist)">✕ All</button>
       <button id="btnDeleteSelected" class="btn btn-danger" title="Delete selected cookies" hidden>✕ Sel</button>
+      <button id="btnEditSelected" class="btn" title="Edit selected cookies" hidden>✎ Edit</button>
       <button id="btnUndo" class="btn btn-undo" title="Undo last action" disabled>↩</button>
     </div>
   </div>
@@ -68,6 +72,26 @@
     </div>
     <div class="profiles-list" id="profilesList">
       <div class="profiles-empty">No saved profiles yet. Save your current cookies as a profile to quickly switch between test environments.</div>
+    </div>
+  </div>
+
+  <!-- Bulk Edit Panel -->
+  <div class="bulk-edit-panel" id="bulkEditPanel" hidden>
+    <div class="bulk-edit-header">
+      <span id="bulkEditCount">Bulk Edit</span>
+      <button id="btnBulkEditClose" class="icon-btn" title="Close bulk edit" aria-label="Close bulk edit">✕</button>
+    </div>
+    <div class="bulk-edit-form" id="bulkEditForm"></div>
+  </div>
+
+  <!-- Intercepted Cookies Panel -->
+  <div class="intercept-panel" id="interceptPanel" hidden>
+    <div class="intercept-header">
+      <span>📡 Intercepted Cookies</span>
+      <button id="btnClearIntercepted" class="btn btn-sm" title="Clear all intercepted cookies">Clear</button>
+    </div>
+    <div class="intercept-list" id="interceptList">
+      <div class="intercept-empty">No cookies intercepted yet. Browse sites to see Set-Cookie headers appear here.</div>
     </div>
   </div>
 

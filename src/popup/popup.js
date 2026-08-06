@@ -17,6 +17,8 @@ let allCookies = [];          // All cookies for current tab (with classificatio
 let filteredCookies = [];     // After search filter
 let editingCookieKey = null;  // 'name|domain|path' of the cookie being edited
 let searchQuery = '';
+let bulkEditMode = false;       // Whether bulk edit panel is visible
+let interceptedCookies = [];    // Cookies intercepted from Set-Cookie headers
 
 // ─── DOM Elements ─────────────────────────────────────────────────
 
@@ -38,6 +40,7 @@ const dom = {
   btnImport: $('#btnImport'),
   btnDeleteAll: $('#btnDeleteAll'),
   btnDeleteSelected: $('#btnDeleteSelected'),
+  btnEditSelected: $('#btnEditSelected'),
   btnUndo: $('#btnUndo'),
   cookieList: $('#cookieList'),
   emptyState: $('#emptyState'),
@@ -47,8 +50,18 @@ const dom = {
   selectAll: $('#selectAll'),
   btnProfiles: $('#btnProfiles'),
   profilesPanel: $('#profilesPanel'),
+  // Interceptor
+  btnInterceptToggle: $('#btnInterceptToggle'),
+  interceptPanel: $('#interceptPanel'),
+  interceptList: $('#interceptList'),
+  btnClearIntercepted: $('#btnClearIntercepted'),
   profilesList: $('#profilesList'),
-  btnSaveProfile: $('#btnSaveProfile')
+  btnSaveProfile: $('#btnSaveProfile'),
+  // Bulk edit
+  bulkEditPanel: $('#bulkEditPanel'),
+  bulkEditCount: $('#bulkEditCount'),
+  bulkEditForm: $('#bulkEditForm'),
+  btnBulkEditClose: $('#btnBulkEditClose')
 };
 
 // ─── Initialization ──────────────────────────────────────────────
@@ -66,6 +79,8 @@ async function init() {
 
   await refreshCookieList();
   setupEventListeners();
+  setupMessageListener();
+  await loadInterceptedCookies();
 }
 
 // ─── Theme ────────────────────────────────────────────────────────
@@ -267,10 +282,21 @@ function getSelectedKeys() {
 }
 
 function updateBatchDeleteButton() {
-  if (!dom.btnDeleteSelected) return;
   const count = getSelectedKeys().length;
-  dom.btnDeleteSelected.hidden = count === 0;
-  dom.btnDeleteSelected.textContent = `✕ ${count}`;
+  // Delete Selected button
+  if (dom.btnDeleteSelected) {
+    dom.btnDeleteSelected.hidden = count === 0;
+    dom.btnDeleteSelected.textContent = `✕ ${count}`;
+  }
+  // Edit Selected button
+  if (dom.btnEditSelected) {
+    dom.btnEditSelected.hidden = count === 0;
+    dom.btnEditSelected.textContent = `✎ ${count}`;
+  }
+  // Close bulk edit if no cookies selected
+  if (count === 0) {
+    closeBulkEdit();
+  }
   // Update select-all state
   if (dom.selectAll) {
     const total = dom.cookieList.querySelectorAll('.cookie-checkbox').length;
@@ -300,6 +326,245 @@ async function handleDeleteSelected() {
   editingCookieKey = null;
   await refreshCookieList();
   updateUndoButton();
+}
+
+// ─── Bulk Edit ────────────────────────────────────────────────────
+
+function renderBulkEditForm() {
+  const count = getSelectedKeys().length;
+  if (count === 0) return;
+  dom.bulkEditCount.textContent = `Bulk Edit (${count} selected)`;
+  dom.bulkEditPanel.hidden = false;
+  dom.bulkEditForm.innerHTML = `
+    <div class="form-row">
+      <label>Domain</label>
+      <input type="text" id="bulkDomain" placeholder="(no change)" autocomplete="off">
+    </div>
+    <div class="form-row">
+      <label>Path</label>
+      <input type="text" id="bulkPath" placeholder="(no change)" autocomplete="off">
+    </div>
+    <div class="form-row">
+      <label>Secure</label>
+      <select id="bulkSecure">
+        <option value="">(no change)</option>
+        <option value="true">Yes (Secure)</option>
+        <option value="false">No (Not Secure)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>HttpOnly</label>
+      <select id="bulkHttpOnly">
+        <option value="">(no change)</option>
+        <option value="true">Yes (HttpOnly)</option>
+        <option value="false">No (Not HttpOnly)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>SameSite</label>
+      <select id="bulkSameSite">
+        <option value="">(no change)</option>
+        <option value="unspecified">Unspecified</option>
+        <option value="no_restriction">None</option>
+        <option value="lax">Lax</option>
+        <option value="strict">Strict</option>
+      </select>
+    </div>
+    <div class="bulk-edit-actions">
+      <button class="btn" id="btnBulkCancel">Cancel</button>
+      <button class="btn btn-primary" id="btnBulkApply">Apply to ${count}</button>
+    </div>
+  `;
+  // Bind form events
+  dom.bulkEditForm.querySelector('#btnBulkCancel').addEventListener('click', closeBulkEdit);
+  dom.bulkEditForm.querySelector('#btnBulkApply').addEventListener('click', handleBulkApply);
+}
+
+async function handleBulkApply() {
+  const keys = getSelectedKeys();
+  if (keys.length === 0) return;
+
+  // Read only the fields the user changed
+  const bulkDomain = dom.bulkEditForm.querySelector('#bulkDomain')?.value?.trim() || null;
+  const bulkPath = dom.bulkEditForm.querySelector('#bulkPath')?.value?.trim() || null;
+  const bulkSecure = dom.bulkEditForm.querySelector('#bulkSecure')?.value || null;
+  const bulkHttpOnly = dom.bulkEditForm.querySelector('#bulkHttpOnly')?.value || null;
+  const bulkSameSite = dom.bulkEditForm.querySelector('#bulkSameSite')?.value || null;
+
+  // Verify at least one field is being changed
+  if (!bulkDomain && !bulkPath && !bulkSecure && !bulkHttpOnly && !bulkSameSite) {
+    alert('Select at least one field to change.');
+    return;
+  }
+
+  if (!confirm(`Apply changes to ${keys.length} cookie(s)?`)) return;
+
+  let success = 0;
+  let failed = 0;
+
+  for (const key of keys) {
+    const cookie = findCookieByKey(key);
+    if (!cookie) continue;
+
+    // Build new cookie data with merged changes
+    const newData = { ...cookie };
+    if (bulkDomain !== null) newData.domain = bulkDomain;
+    if (bulkPath !== null) newData.path = bulkPath;
+    if (bulkSecure !== null) newData.secure = bulkSecure === 'true';
+    if (bulkHttpOnly !== null) newData.httpOnly = bulkHttpOnly === 'true';
+    if (bulkSameSite !== null) newData.sameSite = bulkSameSite;
+
+    const protocol = newData.secure ? 'https' : 'http';
+    const url = `${protocol}://${newData.domain}${newData.path}`;
+
+    undoPush('edit', cookie, newData, url);
+
+    try {
+      // Remove old cookie
+      const oldProtocol = cookie.secure ? 'https' : 'http';
+      const oldUrl = `${oldProtocol}://${cookie.domain}${cookie.path}`;
+      await removeCookie({ url: oldUrl, name: cookie.name, storeId: cookie.storeId });
+      // Set new cookie
+      await setCookie({
+        url,
+        name: newData.name,
+        value: newData.value,
+        domain: newData.domain,
+        path: newData.path,
+        secure: newData.secure,
+        httpOnly: newData.httpOnly,
+        sameSite: newData.sameSite,
+        expirationDate: newData.expirationDate || undefined
+      });
+      success++;
+    } catch (e) {
+      failed++;
+      console.error(`Failed to update ${cookie.name}:`, e);
+    }
+  }
+
+  if (failed > 0) {
+    alert(`Bulk edit: ${success} updated, ${failed} failed.`);
+  }
+  closeBulkEdit();
+  await refreshCookieList();
+  updateUndoButton();
+}
+
+function closeBulkEdit() {
+  bulkEditMode = false;
+  if (dom.bulkEditPanel) dom.bulkEditPanel.hidden = true;
+  if (dom.btnEditSelected) dom.btnEditSelected.hidden = true;
+  if (dom.bulkEditForm) dom.bulkEditForm.innerHTML = '';
+}
+
+// ─── Interceptor ───────────────────────────────────────────────────
+
+function setupMessageListener() {
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'interceptedCookie') {
+      interceptedCookies.unshift(message.cookie);
+      if (interceptedCookies.length > 50) {
+        interceptedCookies.length = 50;
+      }
+      if (dom.interceptPanel && !dom.interceptPanel.hidden) {
+        renderInterceptedCookies();
+      }
+    }
+  });
+}
+
+async function loadInterceptedCookies() {
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'getInterceptedCookies' });
+    interceptedCookies = response?.cookies || [];
+  } catch {
+    interceptedCookies = [];
+  }
+}
+
+function toggleInterceptPanel() {
+  const show = dom.interceptPanel.hidden;
+  dom.interceptPanel.hidden = !show;
+  if (show) {
+    renderInterceptedCookies();
+  }
+}
+
+function renderInterceptedCookies() {
+  if (!dom.interceptList) return;
+  dom.interceptList.innerHTML = '';
+
+  if (interceptedCookies.length === 0) {
+    dom.interceptList.innerHTML = '<div class="intercept-empty">No cookies intercepted yet. Browse sites to see Set-Cookie headers appear here.</div>';
+    return;
+  }
+
+  for (const cookie of interceptedCookies) {
+    const item = document.createElement('div');
+    item.className = 'intercept-item';
+    const time = new Date(cookie.interceptedAt).toLocaleTimeString();
+    const valuePreview = (cookie.value || '').length > 30
+      ? escapeHtml(cookie.value.substring(0, 30)) + '...'
+      : escapeHtml(cookie.value);
+
+    item.innerHTML = `
+      <span class="intercept-name" title="${escapeAttr(cookie.name)}">${escapeHtml(cookie.name)}</span>
+      <span class="intercept-value" title="${escapeAttr(cookie.value)}">${valuePreview}</span>
+      <span class="intercept-domain">${escapeHtml(cookie.domain)}</span>
+      <span class="intercept-time">${time}</span>
+      <button class="btn btn-primary btn-sm btn-add-intercepted"
+        data-name="${escapeAttr(cookie.name)}"
+        data-value="${escapeAttr(cookie.value)}"
+        data-domain="${escapeAttr(cookie.domain)}"
+        data-path="${escapeAttr(cookie.path)}"
+        data-secure="${cookie.secure}"
+        data-httponly="${cookie.httpOnly}"
+        data-samesite="${cookie.sameSite}"
+        data-expiry="${cookie.expirationDate || ''}"
+      >+ Add</button>
+    `;
+    dom.interceptList.appendChild(item);
+  }
+
+  // Bind Add buttons
+  dom.interceptList.querySelectorAll('.btn-add-intercepted').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await handleAddInterceptedCookie(btn.dataset);
+    });
+  });
+}
+
+async function handleAddInterceptedCookie(data) {
+  try {
+    const protocol = data.secure === 'true' ? 'https' : 'http';
+    const url = `${protocol}://${data.domain}${data.path || '/'}`;
+    await setCookie({
+      url,
+      name: data.name,
+      value: data.value,
+      domain: data.domain,
+      path: data.path || '/',
+      secure: data.secure === 'true',
+      httpOnly: data.httpOnly === 'true',
+      sameSite: data.sameSite || 'unspecified',
+      expirationDate: data.expiry ? parseFloat(data.expiry) : undefined
+    });
+    undoPush('add', null, { name: data.name, value: data.value, domain: data.domain, path: data.path || '/', secure: data.secure === 'true', httpOnly: data.httpOnly === 'true', sameSite: data.sameSite || 'unspecified', expirationDate: data.expiry ? parseFloat(data.expiry) : undefined }, url);
+    await refreshCookieList();
+    updateUndoButton();
+  } catch (e) {
+    alert(`Failed to set cookie: ${e.message}`);
+  }
+}
+
+async function clearInterceptedCookies() {
+  interceptedCookies = [];
+  try {
+    await chrome.runtime.sendMessage({ type: 'clearInterceptedCookies' });
+  } catch { /* SW may not be running */ }
+  renderInterceptedCookies();
 }
 
 function renderCookieRow(cookie) {
@@ -855,6 +1120,10 @@ function setupEventListeners() {
   dom.btnProfiles.addEventListener('click', toggleProfilesPanel);
   dom.btnSaveProfile.addEventListener('click', handleSaveProfile);
 
+  // Interceptor
+  dom.btnInterceptToggle.addEventListener('click', toggleInterceptPanel);
+  dom.btnClearIntercepted.addEventListener('click', clearInterceptedCookies);
+
   // Import
   dom.btnImport.addEventListener('click', handleImport);
   dom.importFileInput.addEventListener('change', (e) => {
@@ -868,6 +1137,15 @@ function setupEventListeners() {
 
   // Delete selected
   dom.btnDeleteSelected.addEventListener('click', handleDeleteSelected);
+
+  // Edit selected (bulk edit)
+  dom.btnEditSelected.addEventListener('click', () => {
+    if (!bulkEditMode) {
+      bulkEditMode = true;
+      renderBulkEditForm();
+    }
+  });
+  dom.btnBulkEditClose.addEventListener('click', closeBulkEdit);
 
   // Select all
   dom.selectAll.addEventListener('change', () => {

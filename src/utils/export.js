@@ -153,6 +153,130 @@ export function downloadCurl(cookies, domain, tabUrl) {
   downloadFile(content, `${domainToFilename(domain)}_cookies.sh`, 'text/x-shellscript');
 }
 
+// ─── CSV Export ──────────────────────────────────────────────────
+
+/**
+ * Escape a CSV field per RFC 4180.
+ * Fields containing commas, double quotes, or newlines are wrapped
+ * in double quotes, and embedded double quotes are doubled.
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeCSV(value) {
+  const str = String(value ?? '');
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+/**
+ * Export cookies as CSV string with header row.
+ * Columns: name, value, domain, path, secure, httpOnly, sameSite, expirationDate, session
+ * @param {Object[]} cookies
+ * @returns {string}
+ */
+export function toCSV(cookies) {
+  const header = ['name', 'value', 'domain', 'path', 'secure', 'httpOnly', 'sameSite', 'expirationDate', 'session'];
+  const lines = [header.join(',')];
+
+  for (const c of cookies) {
+    const row = [
+      escapeCSV(c.name),
+      escapeCSV(c.value),
+      escapeCSV(c.domain),
+      escapeCSV(c.path),
+      c.secure ? 'TRUE' : 'FALSE',
+      c.httpOnly ? 'TRUE' : 'FALSE',
+      escapeCSV(c.sameSite || 'unspecified'),
+      c.session ? '' : String(Math.floor(c.expirationDate || 0)),
+      c.session ? 'TRUE' : 'FALSE'
+    ];
+    lines.push(row.join(','));
+  }
+
+  return lines.join('\n') + '\n';
+}
+
+/**
+ * Download cookies as a CSV file.
+ * @param {Object[]} cookies
+ * @param {string} domain
+ */
+export function downloadCSV(cookies, domain) {
+  const content = toCSV(cookies);
+  const filename = `${domainToFilename(domain)}_cookies.csv`;
+  downloadFile(content, filename, 'text/csv');
+}
+
+// ─── Puppeteer Script Export ─────────────────────────────────────
+
+/**
+ * Generate a self-contained Puppeteer script that sets the given cookies.
+ * @param {Object[]} cookies
+ * @param {string} domain — Target domain for the script
+ * @returns {string} Valid JavaScript source
+ */
+export function toPuppeteer(cookies, domain) {
+  const url = `https://${domain}`;
+  const cookieEntries = cookies
+    .filter((c) => c.name)
+    .map((c) => {
+      const cookie = {
+        name: c.name,
+        value: c.value,
+        domain: c.domain.startsWith('.') ? c.domain : '.' + c.domain,
+        path: c.path || '/',
+      };
+      if (c.secure) cookie.secure = true;
+      if (c.httpOnly) cookie.httpOnly = true;
+      if (c.sameSite && c.sameSite !== 'unspecified') {
+        cookie.sameSite = c.sameSite === 'no_restriction' ? 'None' : c.sameSite.charAt(0).toUpperCase() + c.sameSite.slice(1);
+      }
+      if (!c.session && c.expirationDate) {
+        cookie.expires = Math.floor(c.expirationDate);
+      }
+      return JSON.stringify(cookie, null, 4);
+    });
+
+  return [
+    '// CrumbKit Puppeteer Cookie Script',
+    `// Generated for: ${domain}`,
+    `// Date: ${new Date().toISOString()}`,
+    '//',
+    `// Usage: node script.js [--url ${url}]`,
+    '//   Install: npm install puppeteer',
+    '//',
+    '',
+    "const puppeteer = require('puppeteer');",
+    `const url = process.argv[2] || '${url}';`,
+    '',
+    '(async () => {',
+    '  const browser = await puppeteer.launch();',
+    '  const page = await browser.newPage();',
+    '  await page.goto(url);',
+    '',
+    `  const cookies = [\n${cookieEntries.join(',\n')}\n  ];`,
+    '',
+    '  await page.setCookie(...cookies);',
+    '  console.log(`Set ${cookies.length} cookie(s) on ${url}`);',
+    '  await browser.close();',
+    '})();',
+    ''
+  ].join('\n');
+}
+
+/**
+ * Download a Puppeteer script file.
+ * @param {Object[]} cookies
+ * @param {string} domain
+ */
+export function downloadPuppeteer(cookies, domain) {
+  const content = toPuppeteer(cookies, domain);
+  const filename = `${domainToFilename(domain)}_cookies.js`;
+  downloadFile(content, filename, 'application/javascript');
+}
+
 // ─── Convenience ─────────────────────────────────────────────────
 
 /**
@@ -167,11 +291,17 @@ export function exportCookies(format, cookies, domain, tabUrl) {
     case 'json':
       downloadJSON(cookies, domain);
       break;
+    case 'csv':
+      downloadCSV(cookies, domain);
+      break;
     case 'netscape':
       downloadNetscape(cookies, domain);
       break;
     case 'curl':
       downloadCurl(cookies, domain, tabUrl);
+      break;
+    case 'puppeteer':
+      downloadPuppeteer(cookies, domain);
       break;
     default:
       console.error(`Unknown export format: ${format}`);
