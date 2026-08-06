@@ -43,7 +43,7 @@ Share cookies between browsers, save test fixtures, or pipe them into curl and w
 Bulk-delete cookies but keep the ones you actually need. Set up a domain whitelist so login cookies for your bank, email, and tools survive cleanup. Every delete is undoable (Ctrl+Z, up to 50 actions).
 
 **Search, edit, create — fast**
-Real-time search across all cookies on the current tab. Create or edit cookies right from the popup. No page reloads, no digging through Chrome settings.
+Real-time search across all cookies on the current tab. Compact table view shows name, value, and domain at a glance. Create or edit cookies right from the popup. No page reloads, no digging through Chrome settings.
 
 ---
 
@@ -64,6 +64,9 @@ CrumbKit doesn't just show you cookies — it tells you what they're doing. Powe
 **🧠 Undo & whitelist — because mistakes happen.**
 Deleted the wrong cookie? Ctrl+Z. Accidentally wiped all cookies? Not if they were on your whitelist. These aren't luxury features — they're the safety net every cookie tool should have but none do.
 
+**💾 Cookie Profiles — save & restore**
+Testing different environments? Save your current cookies as a named profile, then restore them with one click. Perfect for developers who constantly switch between dev, staging, and production sessions.
+
 ---
 
 ### 👥 BUILT FOR
@@ -81,11 +84,15 @@ Deleted the wrong cookie? Ctrl+Z. Accidentally wiped all cookies? Not if they we
 ### 🏷️ AT A GLANCE
 
 - ✅ View, create, edit, delete cookies
+- ✅ Multi-select with batch delete
 - ✅ Batch delete with domain whitelist
+- ✅ One-click copy cookie value
 - ✅ Export: JSON, Netscape (curl/wget), cURL
 - ✅ Import: JSON, Netscape
 - ✅ Cookie classification (5 categories)
 - ✅ Privacy score 0–100 per site
+- ✅ Cookie profiles — save & restore sets
+- ✅ Side panel support
 - ✅ Undo (Ctrl+Z, up to 50 actions)
 - ✅ Dark/light mode
 - ✅ Zero network requests
