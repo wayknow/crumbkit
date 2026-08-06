@@ -1,6 +1,6 @@
 # CrumbKit — Project Status
 
-> Last updated: 2026-07-30
+> Last updated: 2026-08-06
 
 ---
 
@@ -113,6 +113,16 @@ Run: `npm test`
 | **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` |
 | **Status** | ✅ Published 2026-07-29 |
 
+### v1.1.0 Update
+
+| Field | Detail |
+|-------|--------|
+| **Date submitted** | 2026-08-06 |
+| **Version** | 1.1.0 |
+| **Changes** | Table view with column headers, checkbox batch select/delete, one-click copy value, Cookie Profiles save/restore, Side Panel support |
+| **Permissions** | `cookies`, `storage`, `activeTab` + `<all_urls>` |
+| **Status** | Submitting to CWS ⏳ |
+
 ---
 
 ## Decision Log
@@ -129,5 +139,6 @@ Run: `npm test`
 | 2026-07-20 | **Published on CWS!** | v1.0.0 approved and published same day. [CWS link](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl). CookieClear → CrumbKit rebrand complete. |
 | 2026-07-29 | **Design system added to CLAUDE.md** | Comprehensive visual spec (colors, spacing, radii, animation, accessibility, component specs). All future UI work must follow this system. |
 | 2026-07-29 | **UI audited and aligned to design system** | Full audit found 13 issues across P0/P1/P2. All fixed: focus-visible outlines, 4px spacing base, dark theme colors, border-radius tokens, system-ui font stack, prefers-color-scheme/reduced-motion. |
+| 2026-08-06 | **v1.1.0 submitting** | Table view, batch delete, copy, profiles, side panel. Competitive audit against Cookie-Editor, CookieJar, etc. identified these as key gaps. |
 | 2026-07-30 | **v1.0.1 approved on CWS** | Review passed. Design system alignment, accessibility fixes, and cross-promo now live. |
 | 2026-07-29 | **Stayed free (rejected paid pivot)** | Evaluated 30-day trial + $5 lifetime model vs competitors (CookieJar $4.99/mo, Cookie Editor $3/mo). Decided to keep free — cookie editor market has no validated paid demand, and CrumbKit's role is acquisition for ClearJSON/SnapMark. |

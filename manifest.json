@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CrumbKit",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A privacy-first cookie editor. Open source, zero tracking, no ads.",
   "author": "WayKnow",
   "homepage_url": "https://wayknow.tech/crumbkit.html",
