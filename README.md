@@ -8,7 +8,9 @@ CrumbKit is a Manifest V3 Chrome extension that lets you view, edit, import, exp
 
 ## Why CrumbKit
 
-- **Reliable import/export** — JSON, Netscape, and cURL formats with robust parsing
+- **Reliable import/export** — JSON, CSV, Netscape, cURL, and Puppeteer script formats
+- **Scheduled auto-cleanup** — automatically delete tracking cookies on a schedule
+- **Set-Cookie interceptor** — monitor and one-click add cookies from network requests
 - **Zero tracking** — no analytics, no telemetry, no external requests. All data stays on your device.
 - **No ads** — clean, distraction-free interface
 - **MIT licensed** — fully open source, auditable code
@@ -17,14 +19,21 @@ CrumbKit is a Manifest V3 Chrome extension that lets you view, edit, import, exp
 ## Features
 
 - View all cookies for the current site with name, value, domain, path, expiry
+- Compact table view with column headers and batch select
 - Create, edit, and delete individual cookies
+- Bulk edit selected cookies (domain, path, secure, httpOnly, sameSite)
 - Search and filter cookies in real-time
+- One-click copy cookie value to clipboard
 - Batch delete all cookies (with domain whitelist protection)
-- Export to JSON, Netscape (curl/wget), and cURL formats
+- Export to JSON, CSV, Netscape (curl/wget), cURL, and Puppeteer script formats
 - Import from JSON and Netscape formats
-- Undo support for accidental deletions
+- Cookie Profiles — save and restore cookie sets for testing
+- Scheduled auto-cleanup rules with notifications
+- Set-Cookie request interceptor
+- Undo support for accidental deletions (Ctrl+Z, up to 50 actions)
 - Privacy score for every site you visit
 - Dark/light mode toggle
+- Side panel support
 - Domain whitelist to protect important cookies
 
 ## Installation (Development)
@@ -69,19 +78,22 @@ crumbkit/
 │   │   ├── popup.html
 │   │   ├── popup.css
 │   │   └── popup.js
+│   ├── sidepanel/                # Side panel UI
 │   ├── options/                  # Settings page
 │   │   ├── options.html
 │   │   ├── options.css
 │   │   └── options.js
 │   ├── utils/                    # Core modules
 │   │   ├── cookies.js            # chrome.cookies wrapper
-│   │   ├── export.js             # JSON / Netscape / cURL export
+│   │   ├── export.js             # JSON / CSV / Netscape / cURL / Puppeteer export
 │   │   ├── import.js             # JSON / Netscape import
 │   │   ├── classify.js           # Cookie classification & privacy score
 │   │   ├── undo.js               # Undo/redo stack
-│   │   └── storage.js            # chrome.storage.local wrapper
+│   │   ├── storage.js            # chrome.storage.local wrapper
+│   │   ├── profiles.js           # Cookie profiles save/restore
+│   │   └── rules.js              # Auto-cleanup rules CRUD
 │   └── background/
-│       └── service-worker.js
+│       └── service-worker.js     # Alarms, cleanup, interceptor
 ├── data/
 │   └── tracking-domains.json     # Disconnect.me tracker list
 ├── icons/

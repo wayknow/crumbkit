@@ -5,8 +5,8 @@
 ## 项目概览
 
 - **技术栈**：Vanilla JS + ES modules，零框架依赖，CSS 变量驱动主题
-- **测试**：`npm test`（76 个测试，Puppeteer e2e + Node 原生 test runner）
-- **当前状态**：v1.1.0 已发布 CWS（从 CookieClear 代码库衍生，全新品牌）
+- **测试**：`npm test`（114 个测试，Puppeteer e2e + Node 原生 test runner）
+- **当前状态**：v1.2.0 开发中（v1.1.0 CWS 审核中）
 - **详细状态**：[STATUS.md](STATUS.md)
 - **产品规格**：[PRODUCT.md](PRODUCT.md)
 - **商店文案**：[docs/store-listing.md](docs/store-listing.md)
@@ -14,7 +14,9 @@
 ## 关键架构
 
 - popup 通过 `<script type="module" src="popup.js">` 加载，ES module `import` 解析依赖
-- 模块关系：`popup.js → cookies.js / classify.js / export.js / import.js / storage.js / undo.js`
+- 模块关系：`popup.js → cookies.js / classify.js / export.js / import.js / storage.js / undo.js / profiles.js / rules.js`
+- 新增：profiles.js（cookie 配置保存/恢复）、rules.js（定时清理规则 CRUD）
+- service worker：定时清理（chrome.alarms）+ Set-Cookie 拦截（chrome.webRequest）+ 消息路由
 - `classify.js` 通过 `chrome.runtime.getURL()` 加载打包的 tracking-domains.json（101 条域名）
 - Cookie 分类：name 正则匹配 → domain 匹配追踪器列表 → 隐私评分 0-100
 - 撤销栈：内存中维护（popup 会话内有效），最大 50 条
@@ -29,8 +31,9 @@
 ├── manifest.json
 ├── src/
 │   ├── popup/         # popup.html / popup.css / popup.js
+│   ├── sidepanel/      # sidepanel.html / sidepanel.css
 │   ├── options/       # options.html / options.css / options.js
-│   ├── utils/         # cookies / classify / export / import / storage / undo
+│   ├── utils/         # cookies / classify / export / import / storage / undo / profiles / rules
 │   └── background/    # service-worker.js
 ├── data/              # tracking-domains.json
 ├── icons/             # icon16/48/128.png
@@ -54,7 +57,7 @@
 ## 工作约定
 
 - 改动功能或修复问题后更新 PRODUCT.md / STATUS.md 同步状态
-- 提交前跑 `npm test`，76 个测试必须全部通过
+- 提交前跑 `npm test`，114 个测试必须全部通过
 - 提交信息包含改动说明 + `Co-Authored-By: Claude <noreply@anthropic.com>`
 - 推送到 `git@github.com:wayknow/crumbkit.git`，分支 `main`
 - 上下文快满时说"做检查点"：更新文档 → git commit → 提示清空重启

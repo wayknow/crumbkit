@@ -37,10 +37,13 @@ Stuck on a login bug? View and edit session tokens, switch auth states, and test
 Every site you visit leaves crumbs. CrumbKit classifies every cookie into five categories — Essential, Functional, Analytics, Advertising, Social — and gives the site a privacy score from 0 to 100. You'll know instantly if a site is harmless or watching your every move.
 
 **Export & import cookie sets**
-Share cookies between browsers, save test fixtures, or pipe them into curl and wget. Supports JSON, Netscape format, and cURL command export. Import from JSON or Netscape with one click.
+Share cookies between browsers, save test fixtures, or pipe them into curl and wget. Supports JSON, CSV, Netscape format, cURL command, and Puppeteer script export. Import from JSON or Netscape with one click.
 
 **Clean up with confidence**
-Bulk-delete cookies but keep the ones you actually need. Set up a domain whitelist so login cookies for your bank, email, and tools survive cleanup. Every delete is undoable (Ctrl+Z, up to 50 actions).
+Bulk-delete cookies but keep the ones you actually need. Set up a domain whitelist so login cookies for your bank, email, and tools survive cleanup. Set up scheduled auto-cleanup rules to automatically delete tracking cookies by domain, category, or age. Every delete is undoable (Ctrl+Z, up to 50 actions).
+
+**Monitor & add cookies in real-time**
+The Set-Cookie interceptor watches network responses and shows you every cookie a site tries to set — letting you inspect and add them with one click. No more guessing what's happening under the hood.
 
 **Search, edit, create — fast**
 Real-time search across all cookies on the current tab. Compact table view shows name, value, and domain at a glance. Create or edit cookies right from the popup. No page reloads, no digging through Chrome settings.
@@ -84,14 +87,17 @@ Testing different environments? Save your current cookies as a named profile, th
 ### 🏷️ AT A GLANCE
 
 - ✅ View, create, edit, delete cookies
-- ✅ Multi-select with batch delete
+- ✅ Compact table view with column headers
+- ✅ Multi-select with batch delete + bulk edit
 - ✅ Batch delete with domain whitelist
 - ✅ One-click copy cookie value
-- ✅ Export: JSON, Netscape (curl/wget), cURL
+- ✅ Export: JSON, CSV, Netscape (curl/wget), cURL, Puppeteer script
 - ✅ Import: JSON, Netscape
 - ✅ Cookie classification (5 categories)
 - ✅ Privacy score 0–100 per site
 - ✅ Cookie profiles — save & restore sets
+- ✅ Scheduled auto-cleanup rules
+- ✅ Set-Cookie request interceptor
 - ✅ Side panel support
 - ✅ Undo (Ctrl+Z, up to 50 actions)
 - ✅ Dark/light mode
