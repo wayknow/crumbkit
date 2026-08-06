@@ -6,7 +6,7 @@
 
 - **技术栈**：Vanilla JS + ES modules，零框架依赖，CSS 变量驱动主题
 - **测试**：`npm test`（76 个测试，Puppeteer e2e + Node 原生 test runner）
-- **当前状态**：v1.0.0 已发布 CWS（从 CookieClear 代码库衍生，全新品牌）
+- **当前状态**：v1.1.0 已发布 CWS（从 CookieClear 代码库衍生，全新品牌）
 - **详细状态**：[STATUS.md](STATUS.md)
 - **产品规格**：[PRODUCT.md](PRODUCT.md)
 - **商店文案**：[docs/store-listing.md](docs/store-listing.md)
