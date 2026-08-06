@@ -144,13 +144,13 @@ function updateFooter() {
   const { summary } = calculatePrivacyScore(allCookies);
   const parts = [];
   if (summary.advertising > 0) {
-    parts.push(`<span class="cat-dot" style="background:#F44336" title="Advertising"></span> ${summary.advertising} ads`);
+    parts.push(`<span class="cat-dot cat-dot-advertising" title="Advertising"></span> ${summary.advertising} ads`);
   }
   if (summary.analytics > 0) {
-    parts.push(`<span class="cat-dot" style="background:#FF9800" title="Analytics"></span> ${summary.analytics} analytics`);
+    parts.push(`<span class="cat-dot cat-dot-analytics" title="Analytics"></span> ${summary.analytics} analytics`);
   }
   if (summary.social > 0) {
-    parts.push(`<span class="cat-dot" style="background:#E91E63" title="Social"></span> ${summary.social} social`);
+    parts.push(`<span class="cat-dot cat-dot-social" title="Social"></span> ${summary.social} social`);
   }
   dom.trackerCount.innerHTML = parts.join(' ');
 }
@@ -347,7 +347,7 @@ function renderEditForm(cookie) {
     </div>
     <div class="form-row">
       <label></label>
-      <div style="display:flex;gap:12px;align-items:center">
+      <div class="form-checks">
         <span class="form-check">
           <input type="checkbox" id="editSecure" ${cookie.secure ? 'checked' : ''}>
           <label>Secure</label>
@@ -360,7 +360,7 @@ function renderEditForm(cookie) {
     </div>
     <div class="form-row">
       <label>SameSite</label>
-      <select id="editSameSite" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:12px;font-family:inherit">
+      <select id="editSameSite" class="form-select">
         <option value="unspecified" ${cookie.sameSite === 'unspecified' ? 'selected' : ''}>Unspecified</option>
         <option value="no_restriction" ${cookie.sameSite === 'no_restriction' ? 'selected' : ''}>None</option>
         <option value="lax" ${cookie.sameSite === 'lax' ? 'selected' : ''}>Lax</option>
@@ -400,8 +400,7 @@ async function handleAddNew() {
 
   // Render blank form at top of list
   const form = document.createElement('div');
-  form.className = 'cookie-edit-form';
-  form.style.cssText = 'border-top: 2px solid var(--primary);';
+  form.className = 'cookie-edit-form cookie-edit-form-new';
   form.innerHTML = renderEditForm(template);
   form.addEventListener('click', (e) => e.stopPropagation());
 
