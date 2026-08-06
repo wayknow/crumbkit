@@ -7,6 +7,7 @@ import { exportCookies } from '../utils/export.js';
 import { importFromFile } from '../utils/import.js';
 import { getTheme, setTheme, getWhitelist, isWhitelisted } from '../utils/storage.js';
 import { push as undoPush, pop as undoPop, canUndo, getUndoCount, clear as undoClear } from '../utils/undo.js';
+import { getProfiles, saveProfile, deleteProfile } from '../utils/profiles.js';
 
 // ─── State ───────────────────────────────────────────────────────
 
@@ -36,12 +37,18 @@ const dom = {
   exportMenu: $('#exportMenu'),
   btnImport: $('#btnImport'),
   btnDeleteAll: $('#btnDeleteAll'),
+  btnDeleteSelected: $('#btnDeleteSelected'),
   btnUndo: $('#btnUndo'),
   cookieList: $('#cookieList'),
   emptyState: $('#emptyState'),
   cookieCount: $('#cookieCount'),
   trackerCount: $('#trackerCount'),
-  importFileInput: $('#importFileInput')
+  importFileInput: $('#importFileInput'),
+  selectAll: $('#selectAll'),
+  btnProfiles: $('#btnProfiles'),
+  profilesPanel: $('#profilesPanel'),
+  profilesList: $('#profilesList'),
+  btnSaveProfile: $('#btnSaveProfile')
 };
 
 // ─── Initialization ──────────────────────────────────────────────
@@ -151,8 +158,14 @@ function updateFooter() {
 // ─── Rendering ────────────────────────────────────────────────────
 
 function renderCookieList() {
+  // Preserve list header, remove everything else
+  const header = dom.cookieList.querySelector('.list-header');
   dom.cookieList.innerHTML = '';
+  if (header) dom.cookieList.appendChild(header);
   dom.emptyState.style.display = filteredCookies.length === 0 ? 'flex' : 'none';
+
+  // Show/hide header
+  if (header) header.style.display = filteredCookies.length === 0 ? 'none' : 'flex';
 
   for (const cookie of filteredCookies) {
     const key = cookieKey(cookie);
@@ -164,8 +177,7 @@ function renderCookieList() {
     row.dataset.key = key;
     row.innerHTML = renderCookieRow(cookie);
     row.addEventListener('click', (e) => {
-      // Don't toggle if clicking action buttons
-      if (e.target.closest('.cookie-actions')) return;
+      if (e.target.closest('.icon-btn') || e.target.closest('.col-check')) return;
       toggleEdit(cookie);
     });
     dom.cookieList.appendChild(row);
@@ -184,30 +196,130 @@ function renderCookieList() {
       form.querySelector('.form-delete').addEventListener('click', () => handleDeleteOne(cookie));
     }
   }
+
+  // Bind row action buttons
+  dom.cookieList.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const key = btn.closest('.cookie-row').dataset.key;
+      const cookie = findCookieByKey(key);
+      if (cookie) handleDeleteOne(cookie);
+    });
+  });
+
+  dom.cookieList.querySelectorAll('.btn-copy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const key = btn.closest('.cookie-row').dataset.key;
+      const cookie = findCookieByKey(key);
+      if (cookie) copyCookieValue(cookie, btn);
+    });
+  });
+
+  // Bind checkboxes
+  dom.cookieList.querySelectorAll('.cookie-checkbox').forEach(cb => {
+    cb.addEventListener('click', (e) => e.stopPropagation());
+    cb.addEventListener('change', updateBatchDeleteButton);
+  });
+
+  updateBatchDeleteButton();
+}
+
+function findCookieByKey(key) {
+  return filteredCookies.find(c => cookieKey(c) === key);
+}
+
+// ─── Copy ────────────────────────────────────────────────────────
+
+async function copyCookieValue(cookie, btn) {
+  try {
+    await navigator.clipboard.writeText(cookie.value);
+    btn.textContent = '✓';
+    btn.style.color = 'var(--success)';
+    setTimeout(() => {
+      btn.textContent = '📋';
+      btn.style.color = '';
+    }, 1000);
+  } catch (_) {
+    // Fallback for older browsers / non-HTTPS
+    const ta = document.createElement('textarea');
+    ta.value = cookie.value;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓';
+    btn.style.color = 'var(--success)';
+    setTimeout(() => {
+      btn.textContent = '📋';
+      btn.style.color = '';
+    }, 1000);
+  }
+}
+
+// ─── Batch Delete ─────────────────────────────────────────────────
+
+function getSelectedKeys() {
+  const cbs = dom.cookieList.querySelectorAll('.cookie-checkbox:checked');
+  return Array.from(cbs).map(cb => cb.dataset.key);
+}
+
+function updateBatchDeleteButton() {
+  if (!dom.btnDeleteSelected) return;
+  const count = getSelectedKeys().length;
+  dom.btnDeleteSelected.hidden = count === 0;
+  dom.btnDeleteSelected.textContent = `✕ ${count}`;
+  // Update select-all state
+  if (dom.selectAll) {
+    const total = dom.cookieList.querySelectorAll('.cookie-checkbox').length;
+    dom.selectAll.checked = count > 0 && count === total;
+    dom.selectAll.indeterminate = count > 0 && count < total;
+  }
+}
+
+async function handleDeleteSelected() {
+  const keys = getSelectedKeys();
+  if (keys.length === 0) return;
+  if (!confirm(`Delete ${keys.length} selected cookie(s)?`)) return;
+
+  for (const key of keys) {
+    const cookie = findCookieByKey(key);
+    if (!cookie) continue;
+    const protocol = cookie.secure ? 'https' : 'http';
+    const url = `${protocol}://${cookie.domain}${cookie.path}`;
+    undoPush('delete', cookie, null, url);
+    try {
+      await removeCookie({ url, name: cookie.name, storeId: cookie.storeId });
+    } catch (e) {
+      console.error(`Failed to delete ${cookie.name}:`, e);
+    }
+  }
+
+  editingCookieKey = null;
+  await refreshCookieList();
+  updateUndoButton();
 }
 
 function renderCookieRow(cookie) {
   const catIcon = getCategoryIcon(cookie.category);
   const valuePreview = cookie.value
-    ? (cookie.value.length > 30 ? cookie.value.substring(0, 30) + '...' : cookie.value)
+    ? (cookie.value.length > 40 ? cookie.value.substring(0, 40) + '…' : cookie.value)
     : '(empty)';
   const badges = [];
   if (cookie.secure) badges.push('<span class="badge badge-secure">S</span>');
   if (cookie.httpOnly) badges.push('<span class="badge badge-httponly">H</span>');
 
   return `
-    <span class="cookie-category-icon">${catIcon}</span>
-    <div class="cookie-info">
-      <div class="cookie-name">${escapeHtml(cookie.name)}</div>
-      <div class="cookie-meta">
-        <span class="cookie-value-preview">${escapeHtml(valuePreview)}</span>
-        <span class="cookie-domain-preview">${escapeHtml(cookie.domain)}</span>
-        ${badges.join(' ')}
-      </div>
-    </div>
-    <div class="cookie-actions">
-      <button class="icon-btn btn-delete" title="Delete cookie" data-action="delete">✕</button>
-    </div>
+    <span class="col-check"><input type="checkbox" class="cookie-checkbox" data-key="${cookieKey(cookie)}" title="Select cookie"></span>
+    <span class="col-icon">${catIcon}</span>
+    <span class="col-name" title="${escapeAttr(cookie.name)}">${escapeHtml(cookie.name)}</span>
+    <span class="col-value" title="${escapeAttr(cookie.value)}">${escapeHtml(valuePreview)}</span>
+    <span class="col-domain" title="${escapeAttr(cookie.domain)}">${escapeHtml(cookie.domain)}</span>
+    <span class="col-tags">${badges.join(' ')}<span class="tag-category cat-${cookie.category}">${cookie.categoryLabel || '?'}</span></span>
+    <button class="icon-btn btn-copy" title="Copy value" data-action="copy">📋</button>
+    <button class="icon-btn btn-delete" title="Delete cookie" data-action="delete">✕</button>
   `;
 }
 
@@ -593,6 +705,113 @@ async function handleImportFile(file) {
   dom.importFileInput.value = '';
 }
 
+// ─── Profiles ───────────────────────────────────────────────────
+
+function toggleProfilesPanel() {
+  const show = dom.profilesPanel.hidden;
+  dom.profilesPanel.hidden = !show;
+  if (show) renderProfileList();
+}
+
+async function renderProfileList() {
+  const profiles = await getProfiles();
+  dom.profilesList.innerHTML = '';
+
+  if (profiles.length === 0) {
+    dom.profilesList.innerHTML = '<div class="profiles-empty">No saved profiles yet. Save your current cookies as a profile to quickly switch between test environments.</div>';
+    return;
+  }
+
+  for (const p of profiles) {
+    const item = document.createElement('div');
+    item.className = 'profile-item';
+    const date = new Date(p.createdAt).toLocaleDateString();
+    item.innerHTML = `
+      <div class="profile-info">
+        <div class="profile-name">${escapeHtml(p.name)}</div>
+        <div class="profile-meta">
+          <span>${escapeHtml(p.domain)}</span>
+          <span>${p.cookies.length} cookie${p.cookies.length !== 1 ? 's' : ''}</span>
+          <span>${date}</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-primary btn-sm btn-load-profile" data-id="${p.id}">Load</button>
+        <button class="btn btn-danger btn-sm btn-del-profile" data-id="${p.id}">Del</button>
+      </div>
+    `;
+    dom.profilesList.appendChild(item);
+  }
+
+  // Bind load buttons
+  dom.profilesList.querySelectorAll('.btn-load-profile').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await handleLoadProfile(btn.dataset.id);
+    });
+  });
+
+  // Bind delete buttons
+  dom.profilesList.querySelectorAll('.btn-del-profile').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await handleDeleteProfile(btn.dataset.id);
+    });
+  });
+}
+
+async function handleSaveProfile() {
+  if (allCookies.length === 0) {
+    alert('No cookies to save.');
+    return;
+  }
+  const name = prompt('Profile name:', `${currentDomain} (${allCookies.length} cookies)`);
+  if (!name || !name.trim()) return;
+
+  await saveProfile(name.trim(), currentDomain, allCookies);
+  renderProfileList();
+}
+
+async function handleLoadProfile(id) {
+  const { getProfileById } = await import('../utils/profiles.js');
+  const profile = await getProfileById(id);
+  if (!profile) return;
+
+  if (!confirm(`Load profile "${profile.name}"? This will set ${profile.cookies.length} cookie(s) for ${profile.domain}.`)) return;
+
+  let success = 0;
+  let failed = 0;
+  const protocol = 'https';
+  const baseUrl = `${protocol}://${profile.domain}/`;
+
+  for (const c of profile.cookies) {
+    try {
+      const url = `${protocol}://${c.domain}${c.path || '/'}`;
+      await setCookie({
+        url,
+        name: c.name,
+        value: c.value,
+        domain: c.domain,
+        path: c.path || '/',
+        secure: c.secure,
+        httpOnly: c.httpOnly,
+        sameSite: c.sameSite || 'unspecified',
+        expirationDate: c.expirationDate || undefined
+      });
+      success++;
+    } catch (e) {
+      failed++;
+    }
+  }
+
+  alert(`Profile loaded: ${success} cookie(s) set${failed > 0 ? `, ${failed} failed` : ''}.`);
+  await refreshCookieList();
+}
+
+async function handleDeleteProfile(id) {
+  if (!confirm('Delete this profile?')) return;
+  await deleteProfile(id);
+  renderProfileList();
+}
+
 // ─── Event Listeners ─────────────────────────────────────────────
 
 function setupEventListeners() {
@@ -633,6 +852,10 @@ function setupEventListeners() {
     dom.exportMenu.classList.remove('open');
   });
 
+  // Profiles
+  dom.btnProfiles.addEventListener('click', toggleProfilesPanel);
+  dom.btnSaveProfile.addEventListener('click', handleSaveProfile);
+
   // Import
   dom.btnImport.addEventListener('click', handleImport);
   dom.importFileInput.addEventListener('change', (e) => {
@@ -643,6 +866,16 @@ function setupEventListeners() {
 
   // Delete all
   dom.btnDeleteAll.addEventListener('click', handleDeleteAll);
+
+  // Delete selected
+  dom.btnDeleteSelected.addEventListener('click', handleDeleteSelected);
+
+  // Select all
+  dom.selectAll.addEventListener('change', () => {
+    const checked = dom.selectAll.checked;
+    dom.cookieList.querySelectorAll('.cookie-checkbox').forEach(cb => { cb.checked = checked; });
+    updateBatchDeleteButton();
+  });
 
   // Undo
   dom.btnUndo.addEventListener('click', handleUndo);

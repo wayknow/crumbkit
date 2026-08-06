@@ -1,0 +1,9 @@
+/* CrumbKit Side Panel overrides */
+/* popup.css is loaded first — these overrides adapt it to side panel dimensions */
+
+body {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  min-height: 100vh;
+}

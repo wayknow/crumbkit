@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CrumbKit</title>
-  <link rel="stylesheet" href="popup.css">
+  <title>CrumbKit Side Panel</title>
+  <link rel="stylesheet" href="../popup/popup.css">
+  <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <!-- Header -->
@@ -20,7 +21,6 @@
         </button>
       </div>
     </div>
-    <!-- Privacy Score -->
     <div class="privacy-score-row">
       <div class="score-circle" id="scoreCircle" title="Privacy Score">
         <svg viewBox="0 0 36 36" class="score-chart">
@@ -67,7 +67,7 @@
       <button id="btnSaveProfile" class="btn btn-primary btn-sm">+ Save Current</button>
     </div>
     <div class="profiles-list" id="profilesList">
-      <div class="profiles-empty">No saved profiles yet. Save your current cookies as a profile to quickly switch between test environments.</div>
+      <div class="profiles-empty">No saved profiles yet.</div>
     </div>
   </div>
 
@@ -104,9 +104,8 @@
     </div>
   </footer>
 
-  <!-- Hidden file input for import -->
   <input type="file" id="importFileInput" accept=".json,.txt" hidden>
 
-  <script type="module" src="popup.js"></script>
+  <script type="module" src="../popup/popup.js"></script>
 </body>
 </html>
