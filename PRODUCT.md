@@ -90,7 +90,7 @@ Three pillars:
 ✅ Batch delete all cookies (respects domain whitelist)
 ✅ One-click copy cookie value to clipboard
 ✅ Real-time search and filter
-✅ Export to JSON, Netscape (curl/wget), cURL, CSV, and Puppeteer script formats
+✅ Export to JSON, Netscape (curl/wget), cURL, CSV, Puppeteer script, and Set-Cookie header formats
 ✅ Import from JSON and Netscape formats
 ✅ Cookie Profiles — save and restore cookie sets
 ✅ Cookie auto-classification (Essential / Functional / Analytics / Advertising / Social)
@@ -109,8 +109,7 @@ Three pillars:
 ### Future (user-feedback driven)
 
 ```
-☐ CSV / Puppeteer script import
-☐ Set-Cookie header export
+☐ (none — all planned features complete)
 ```
 
 ### Won't Do

@@ -8,7 +8,7 @@ CrumbKit is a Manifest V3 Chrome extension that lets you view, edit, import, exp
 
 ## Why CrumbKit
 
-- **Reliable import/export** — JSON, CSV, Netscape, cURL, and Puppeteer script formats
+- **Reliable import/export** — JSON, CSV, Netscape, cURL, Puppeteer script, and Set-Cookie header formats
 - **Scheduled auto-cleanup** — automatically delete tracking cookies on a schedule
 - **Set-Cookie interceptor** — monitor and one-click add cookies from network requests
 - **Zero tracking** — no analytics, no telemetry, no external requests. All data stays on your device.
@@ -25,8 +25,9 @@ CrumbKit is a Manifest V3 Chrome extension that lets you view, edit, import, exp
 - Search and filter cookies in real-time
 - One-click copy cookie value to clipboard
 - Batch delete all cookies (with domain whitelist protection)
-- Export to JSON, CSV, Netscape (curl/wget), cURL, and Puppeteer script formats
+- Export to JSON, CSV, Netscape (curl/wget), cURL, Puppeteer script, and Set-Cookie header formats
 - Import from JSON and Netscape formats
+- CHIPS partitioned cookie support (view, export, import with top-level site)
 - Cookie Profiles — save and restore cookie sets for testing
 - Scheduled auto-cleanup rules with notifications
 - Set-Cookie request interceptor
@@ -85,7 +86,7 @@ crumbkit/
 │   │   └── options.js
 │   ├── utils/                    # Core modules
 │   │   ├── cookies.js            # chrome.cookies wrapper
-│   │   ├── export.js             # JSON / CSV / Netscape / cURL / Puppeteer export
+│   │   ├── export.js             # JSON / CSV / Netscape / cURL / Puppeteer / Set-Cookie export
 │   │   ├── import.js             # JSON / Netscape import
 │   │   ├── classify.js           # Cookie classification & privacy score
 │   │   ├── undo.js               # Undo/redo stack

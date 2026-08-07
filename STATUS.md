@@ -32,7 +32,11 @@ The appeal on the old item is still pending, but this new project starts clean.
 - No competitor names, no "replacement" wording — positioned purely on its own merits
 - Clean CWS submission from day one
 
-### What's New (2026-07-17)
+### What's New (2026-08-06)
+
+- **Set-Cookie header export** added — export cookies as `Set-Cookie:` HTTP header strings, alongside JSON/Netscape/cURL/CSV/Puppeteer
+- **CHIPS partitioned cookie support** — `partitionKey` preserved across normalizeCookie, dedup, all 6 export formats, import, and popup UI. Partitioned cookies show a "P" badge and read-only top-level-site info in edit form.
+- **Future roadmap cleared** — all planned features complete; CSV/Puppeteer import dropped (no competing product offers it, no user demand)
 
 - **GitHub repo live:** [github.com/wayknow/crumbkit](https://github.com/wayknow/crumbkit)
 - **CWS submission submitted** with rewritten store listing emphasizing purpose and value proposition
@@ -129,7 +133,7 @@ Run: `npm test`
 |-------|--------|
 | **Date** | 2026-08-06 |
 | **Version** | 1.2.0 |
-| **Changes** | CSV + Puppeteer export, bulk edit operations, scheduled auto-cleanup rules (alarms + notifications), Set-Cookie request interceptor (webRequest), Suggest a Feature link |
+| **Changes** | CSV + Puppeteer + Set-Cookie header export, bulk edit operations, scheduled auto-cleanup rules (alarms + notifications), Set-Cookie request interceptor (webRequest), CHIPS partitioned cookie support, Suggest a Feature link |
 | **Permissions** | `cookies`, `storage`, `activeTab`, `alarms`, `notifications`, `webRequest` + `<all_urls>` |
 | **Status** | Development 🚧 |
 
