@@ -109,6 +109,21 @@ Testing different environments? Save your current cookies as a named profile, th
 
 ---
 
+## Release Notes (v1.2.0)
+
+> ⚠️ No format enumeration — keyword spam risk. Copy verbatim.
+
+```
+• Added Set-Cookie HTTP header export — now supporting 6 export formats in total
+• CHIPS partitioned cookie support — view, export, and import partitioned cookies
+• Set-Cookie interceptor: monitor response headers in real time, add cookies with one click
+• Scheduled auto-cleanup rules — purge cookies by domain, category, or age
+• Bulk edit: change attributes across selected cookies at once
+• Suggest a Feature link in options page
+```
+
+---
+
 ## Promotional Tile Text
 
 ### Small Tile (440×280)
