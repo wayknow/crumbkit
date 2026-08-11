@@ -39,7 +39,7 @@ Audit privacy & tracking
 Every site you visit leaves crumbs. CrumbKit classifies every cookie into five categories — Essential, Functional, Analytics, Advertising, Social — and gives the site a privacy score from 0 to 100. You'll know instantly if a site is harmless or watching your every move.
 
 Export & import cookie sets
-Share cookies between browsers, save test fixtures, or pipe them into curl and wget. Supports JSON, CSV, Netscape format, cURL command, Puppeteer script, and Set-Cookie HTTP header export. Import from JSON or Netscape with one click.
+Share cookies between browsers, save test fixtures, or pipe them into curl and wget. Export in six formats — including JSON, Netscape, and cURL — and import from JSON or Netscape with one click.
 
 Clean up with confidence
 Bulk-delete cookies but keep the ones you actually need. Set up a domain whitelist so login cookies for your bank, email, and tools survive cleanup. Or bulk-edit domain, path, Secure, HttpOnly, and SameSite across selected cookies in one go. Set up scheduled auto-cleanup rules to purge tracking cookies by domain, category, or age — on an hourly, daily, or weekly schedule. Every delete is undoable (Ctrl+Z, up to 50 actions).
@@ -91,7 +91,7 @@ Testing different environments? Save your current cookies as a named profile, th
 ✅ Multi-select with batch delete + bulk edit
 ✅ Batch delete with domain whitelist
 ✅ One-click copy cookie value
-✅ Export: JSON, CSV, Netscape (curl/wget), cURL, Puppeteer script, Set-Cookie headers
+✅ Export: 6 formats — JSON, Netscape, cURL and more
 ✅ Import: JSON, Netscape
 ✅ Cookie classification (5 categories)
 ✅ Privacy score 0–100 per site
@@ -132,7 +132,7 @@ Free · Open source · Zero tracking · MV3 native
 
 ## SEO Keywords (comma-separated)
 
-cookie editor, cookie manager, edit cookies, chrome cookie editor, cookie export, cookie import, cookie privacy, privacy score, cookie cleaner, delete cookies, manage cookies, developer tools, web developer, QA testing, open source cookie editor, free cookie editor, manifest v3 cookie editor
+cookie editor, cookie manager, cookie export, cookie import, privacy score, developer tools
 
 ---
 
