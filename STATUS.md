@@ -4,9 +4,9 @@
 
 ---
 
-## Current State: v1.2.0 Under CWS Review (resubmission)
+## Current State: v1.2.0 Published ✅
 
-**v1.0.0 published 2026-07-20. v1.0.1 published 2026-07-29. v1.1.0 published 2026-08-10. v1.2.0 under CWS review (resubmission after keyword spam rejection).**
+**v1.0.0 published 2026-07-20. v1.0.1 published 2026-07-29. v1.1.0 published 2026-08-10. v1.2.0 published 2026-08-12.**
 [CWS Listing](https://chromewebstore.google.com/detail/crumbkit/ggnfjnagciaomejccfjceniohpdkcbjl)
 
 ### v1.0.1 (2026-07-29) — Design System Alignment
@@ -135,7 +135,7 @@ Run: `npm test`
 | **Version** | 1.2.0 |
 | **Changes** | CSV + Puppeteer + Set-Cookie header export, bulk edit operations, scheduled auto-cleanup rules (alarms + notifications), Set-Cookie request interceptor (webRequest), CHIPS partitioned cookie support, Suggest a Feature link |
 | **Permissions** | `cookies`, `storage`, `activeTab`, `alarms`, `notifications`, `webRequest` + `<all_urls>` |
-| **Status** | Under CWS review ⏳ (resubmitted 2026-08-11 after keyword spam rejection, ref Yellow Argon) |
+| **Status** | ✅ Published 2026-08-12 (resubmission approved after keyword spam rejection, ref Yellow Argon) |
 
 ---
 
