@@ -12,13 +12,13 @@
 
 ## Title (max 75 chars)
 
-CrumbKit — Privacy-first cookie editor. Open source, zero tracking.
+Cookie Editor — CrumbKit
 
 ---
 
 ## Short Description (max 132 chars)
 
-Free, open-source cookie editor. View, edit, import & export cookies. Privacy score, dark mode, zero tracking.
+Cookie editor: view, edit, export, import cookies. Privacy score, auto-cleanup, dark mode. Free, open source, zero tracking.
 
 ---
 
