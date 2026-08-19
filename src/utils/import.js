@@ -42,7 +42,8 @@ function parseJSON(text) {
       secure: item.secure || false,
       httpOnly: item.httpOnly || false,
       sameSite: item.sameSite || 'unspecified',
-      expirationDate: item.expirationDate || undefined
+      expirationDate: item.expirationDate || undefined,
+      partitionKey: item.partitionKey || undefined
     });
   }
 
@@ -172,7 +173,8 @@ export async function importFromFile(file, targetUrl) {
         secure: cookie.secure,
         httpOnly: cookie.httpOnly,
         sameSite: cookie.sameSite || 'unspecified',
-        expirationDate: cookie.expirationDate
+        expirationDate: cookie.expirationDate,
+        partitionKey: cookie.partitionKey
       });
 
       result.success++;

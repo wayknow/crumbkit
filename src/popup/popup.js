@@ -575,6 +575,7 @@ function renderCookieRow(cookie) {
   const badges = [];
   if (cookie.secure) badges.push('<span class="badge badge-secure">S</span>');
   if (cookie.httpOnly) badges.push('<span class="badge badge-httponly">H</span>');
+  if (cookie.partitionKey) badges.push('<span class="badge badge-partitioned" title="Partitioned: ' + escapeAttr(cookie.partitionKey.topLevelSite || '') + '">P</span>');
 
   return `
     <span class="col-check"><input type="checkbox" class="cookie-checkbox" data-key="${cookieKey(cookie)}" title="Select cookie"></span>
@@ -632,6 +633,11 @@ function renderEditForm(cookie) {
         <option value="strict" ${cookie.sameSite === 'strict' ? 'selected' : ''}>Strict</option>
       </select>
     </div>
+    ${cookie.partitionKey ? `
+    <div class="form-row">
+      <label>Partitioned</label>
+      <span class="form-readonly">${escapeHtml(cookie.partitionKey.topLevelSite || '')} <span class="form-hint">(CHIPS — set by server)</span></span>
+    </div>` : ''}
     <div class="form-actions">
       <button class="btn btn-danger form-delete">Delete</button>
       <button class="btn form-cancel">Cancel</button>
@@ -1174,7 +1180,7 @@ function setupEventListeners() {
 // ─── Utilities ────────────────────────────────────────────────────
 
 function cookieKey(cookie) {
-  return `${cookie.name}|${cookie.domain}|${cookie.path}`;
+  return `${cookie.name}|${cookie.domain}|${cookie.path}|${cookie.partitionKey || ''}`;
 }
 
 function getCategoryIcon(categoryId) {

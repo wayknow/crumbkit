@@ -489,6 +489,11 @@ body {
   border-color: var(--warning);
 }
 
+.badge-partitioned {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
 /* Row action buttons */
 .cookie-row .icon-btn {
   width: 20px;
@@ -603,6 +608,20 @@ body {
   text-transform: none;
   letter-spacing: 0;
   text-align: left;
+}
+
+.cookie-edit-form .form-readonly {
+  flex: 1;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text-secondary, #9CA3AF);
+  font-family: var(--font-mono, monospace);
+}
+
+.cookie-edit-form .form-hint {
+  font-size: 10px;
+  color: var(--text-tertiary, #6B7280);
+  font-family: var(--font-sans, inherit);
 }
 
 .cookie-edit-form .form-actions {

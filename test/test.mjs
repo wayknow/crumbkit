@@ -244,7 +244,7 @@ async function runUnitTests() {
     const csv = toCSV(cookies);
     const lines = csv.trim().split('\n');
     assert(lines.length === 3, 'CSV has header + 2 data rows');
-    assert(lines[0] === 'name,value,domain,path,secure,httpOnly,sameSite,expirationDate,session', 'CSV header row correct');
+    assert(lines[0] === 'name,value,domain,path,secure,httpOnly,sameSite,expirationDate,session,partitionKey', 'CSV header row correct');
     assert(lines[2].includes('TRUE'), 'CSV session column has TRUE');
     // Verify comma in value is escaped: the field must contain double quotes
     assert(csv.includes('"hello, world"'), 'CSV wraps comma-containing value in double quotes');
@@ -278,6 +278,56 @@ async function runUnitTests() {
     assert(script.includes('persist'), 'includes persistent cookie name');
     assert(script.includes('1735689600'), 'includes expirationDate as expires');
     assert(script.includes('example.com'), 'includes target domain');
+  });
+
+  await test('Export: toSetCookieHeader generates valid headers', async () => {
+    const { toSetCookieHeader } = await import(`${EXT_PATH}/src/utils/export.js`);
+    const cookies = [
+      { name: 'sess', value: 'abc', domain: '.example.com', path: '/', secure: true, httpOnly: true, sameSite: 'lax', expirationDate: null, session: true },
+      { name: 'persist', value: 'xyz', domain: '.example.com', path: '/app', secure: false, httpOnly: false, sameSite: 'strict', expirationDate: Math.floor(Date.now() / 1000) + 3600, session: false },
+      { name: 'no_restrict', value: '1', domain: 'cdn.example.com', path: '/', secure: true, httpOnly: false, sameSite: 'no_restriction', expirationDate: null, session: true }
+    ];
+    const headers = toSetCookieHeader(cookies);
+    assert(headers.includes('Set-Cookie: sess=abc'), 'includes session cookie');
+    assert(headers.includes('Domain=.example.com'), 'includes domain');
+    assert(headers.includes('Path=/app'), 'includes path for persist cookie');
+    assert(headers.includes('Secure'), 'includes Secure attribute');
+    assert(headers.includes('HttpOnly'), 'includes HttpOnly attribute');
+    assert(headers.includes('SameSite=Lax'), 'includes SameSite=Lax');
+    assert(headers.includes('SameSite=Strict'), 'includes SameSite=Strict');
+    assert(headers.includes('SameSite=None'), 'maps no_restriction to None');
+    assert(headers.includes('Max-Age='), 'includes Max-Age for persistent cookie');
+    // Session cookie should NOT have Max-Age
+    const sessLine = headers.split('\n').find(l => l.includes('sess=abc'));
+    assert(!sessLine.includes('Max-Age'), 'session cookie has no Max-Age');
+  });
+
+  await test('Export: partitionKey preserved across formats', async () => {
+    const mod = await import(`${EXT_PATH}/src/utils/export.js`);
+    const cookies = [
+      { name: 'part', value: 'val', domain: '.example.com', path: '/', secure: true, httpOnly: true, sameSite: 'lax', expirationDate: 1735689600, session: false, partitionKey: { topLevelSite: 'https://example.com' } },
+      { name: 'nopart', value: 'nv', domain: '.example.com', path: '/', secure: false, httpOnly: false, sameSite: 'unspecified', expirationDate: null, session: true, partitionKey: null }
+    ];
+
+    // JSON includes partitionKey only when present
+    const json = mod.toJSON(cookies);
+    const parsed = JSON.parse(json);
+    assert(parsed[0].partitionKey !== undefined, 'partitioned cookie includes partitionKey in JSON');
+    assert(parsed[0].partitionKey.topLevelSite === 'https://example.com', 'partitionKey has topLevelSite');
+    assert(parsed[1].partitionKey === undefined, 'non-partitioned cookie omits partitionKey');
+
+    // CSV includes partitionKey column
+    const csv = mod.toCSV(cookies);
+    // CSV double-quote escapes partitionKey JSON: {"topLevelSite":"https://..."} → "{""topLevelSite"":""https://..."}"
+    assert(csv.includes('topLevelSite') && csv.includes('https://example.com'), 'CSV includes partitionKey data');
+
+    // Set-Cookie header includes Partitioned attribute
+    const headers = mod.toSetCookieHeader(cookies);
+    assert(headers.includes('Partitioned'), 'Set-Cookie header includes Partitioned for partitioned cookie');
+
+    // Puppeteer script includes partitionKey
+    const script = mod.toPuppeteer(cookies, 'example.com');
+    assert(script.includes('partitionKey'), 'Puppeteer script includes partitionKey');
   });
 
   // ─── Rules CRUD ──────────────────────────────────────────────
@@ -596,17 +646,15 @@ async function runE2ETests() {
   });
 
   // v1.2.0 — Export dropdown options
-  await test('Export dropdown has CSV and Puppeteer options', async () => {
+  await test('Export dropdown has CSV, Puppeteer, and Set-Cookie header options', async () => {
     const page = await browser.newPage();
     await page.goto(`chrome-extension://${extId}/src/popup/popup.html`, { waitUntil: 'domcontentloaded' });
-    const hasCSV = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#exportMenu button')).some(b => b.dataset.format === 'csv');
+    const formats = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('#exportMenu button')).map(b => b.dataset.format);
     });
-    const hasPuppeteer = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('#exportMenu button')).some(b => b.dataset.format === 'puppeteer');
-    });
-    assert(hasCSV, 'CSV export button exists');
-    assert(hasPuppeteer, 'Puppeteer export button exists');
+    assert(formats.includes('csv'), 'CSV export button exists');
+    assert(formats.includes('puppeteer'), 'Puppeteer export button exists');
+    assert(formats.includes('set-cookie'), 'Set-Cookie header export button exists');
     await page.close();
   });
 

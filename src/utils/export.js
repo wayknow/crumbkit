@@ -1,5 +1,5 @@
 // CrumbKit — Cookie export module
-// Supports JSON, Netscape (curl/wget), and cURL formats.
+// Supports JSON, Netscape (curl/wget), cURL, CSV, Puppeteer script, and Set-Cookie header formats.
 
 /**
  * Format a Unix timestamp to a localized date string.
@@ -46,17 +46,21 @@ function domainToFilename(domain) {
  * @returns {string} Pretty-printed JSON.
  */
 export function toJSON(cookies) {
-  const exportData = cookies.map((c) => ({
-    name: c.name,
-    value: c.value,
-    domain: c.domain,
-    path: c.path,
-    secure: c.secure,
-    httpOnly: c.httpOnly,
-    sameSite: c.sameSite,
-    expirationDate: c.expirationDate,
-    session: c.session
-  }));
+  const exportData = cookies.map((c) => {
+    const entry = {
+      name: c.name,
+      value: c.value,
+      domain: c.domain,
+      path: c.path,
+      secure: c.secure,
+      httpOnly: c.httpOnly,
+      sameSite: c.sameSite,
+      expirationDate: c.expirationDate,
+      session: c.session
+    };
+    if (c.partitionKey) entry.partitionKey = c.partitionKey;
+    return entry;
+  });
   return JSON.stringify(exportData, null, 2);
 }
 
@@ -177,7 +181,7 @@ function escapeCSV(value) {
  * @returns {string}
  */
 export function toCSV(cookies) {
-  const header = ['name', 'value', 'domain', 'path', 'secure', 'httpOnly', 'sameSite', 'expirationDate', 'session'];
+  const header = ['name', 'value', 'domain', 'path', 'secure', 'httpOnly', 'sameSite', 'expirationDate', 'session', 'partitionKey'];
   const lines = [header.join(',')];
 
   for (const c of cookies) {
@@ -190,7 +194,8 @@ export function toCSV(cookies) {
       c.httpOnly ? 'TRUE' : 'FALSE',
       escapeCSV(c.sameSite || 'unspecified'),
       c.session ? '' : String(Math.floor(c.expirationDate || 0)),
-      c.session ? 'TRUE' : 'FALSE'
+      c.session ? 'TRUE' : 'FALSE',
+      escapeCSV(c.partitionKey ? JSON.stringify(c.partitionKey) : '')
     ];
     lines.push(row.join(','));
   }
@@ -207,6 +212,59 @@ export function downloadCSV(cookies, domain) {
   const content = toCSV(cookies);
   const filename = `${domainToFilename(domain)}_cookies.csv`;
   downloadFile(content, filename, 'text/csv');
+}
+
+// ─── Set-Cookie Header Export ────────────────────────────────────
+
+/**
+ * Export cookies as Set-Cookie HTTP response header strings.
+ * One header per line, suitable for pasting into server configs or HTTP responses.
+ *
+ * Format: Set-Cookie: name=value; Domain=...; Path=...; Secure; HttpOnly; SameSite=...
+ *
+ * @param {Object[]} cookies - Normalized cookie objects.
+ * @returns {string}
+ */
+export function toSetCookieHeader(cookies) {
+  return cookies
+    .filter((c) => c.name)
+    .map((c) => {
+      const parts = [`${encodeURIComponent(c.name)}=${encodeURIComponent(c.value)}`];
+
+      if (c.domain) {
+        const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+        parts.push(`Domain=${domain}`);
+      }
+      if (c.path) parts.push(`Path=${c.path}`);
+
+      if (!c.session && c.expirationDate) {
+        const maxAge = Math.floor(c.expirationDate - Date.now() / 1000);
+        if (maxAge > 0) parts.push(`Max-Age=${maxAge}`);
+      }
+
+      if (c.secure) parts.push('Secure');
+      if (c.httpOnly) parts.push('HttpOnly');
+      if (c.sameSite && c.sameSite !== 'unspecified') {
+        const val = c.sameSite === 'no_restriction' ? 'None' : c.sameSite.charAt(0).toUpperCase() + c.sameSite.slice(1);
+        parts.push(`SameSite=${val}`);
+      }
+
+      if (c.partitionKey) parts.push('Partitioned');
+
+      return `Set-Cookie: ${parts.join('; ')}`;
+    })
+    .join('\n') + '\n';
+}
+
+/**
+ * Download cookies as Set-Cookie header strings.
+ * @param {Object[]} cookies
+ * @param {string} domain
+ */
+export function downloadSetCookieHeader(cookies, domain) {
+  const content = toSetCookieHeader(cookies);
+  const filename = `${domainToFilename(domain)}_cookies_headers.txt`;
+  downloadFile(content, filename, 'text/plain');
 }
 
 // ─── Puppeteer Script Export ─────────────────────────────────────
@@ -235,6 +293,9 @@ export function toPuppeteer(cookies, domain) {
       }
       if (!c.session && c.expirationDate) {
         cookie.expires = Math.floor(c.expirationDate);
+      }
+      if (c.partitionKey) {
+        cookie.partitionKey = c.partitionKey;
       }
       return JSON.stringify(cookie, null, 4);
     });
@@ -281,7 +342,7 @@ export function downloadPuppeteer(cookies, domain) {
 
 /**
  * Export cookies in the specified format and trigger download.
- * @param {'json'|'netscape'|'curl'} format
+ * @param {'json'|'csv'|'netscape'|'curl'|'puppeteer'|'set-cookie'} format
  * @param {Object[]} cookies
  * @param {string} domain
  * @param {string} [tabUrl]
@@ -302,6 +363,9 @@ export function exportCookies(format, cookies, domain, tabUrl) {
       break;
     case 'puppeteer':
       downloadPuppeteer(cookies, domain);
+      break;
+    case 'set-cookie':
+      downloadSetCookieHeader(cookies, domain);
       break;
     default:
       console.error(`Unknown export format: ${format}`);

@@ -35,7 +35,8 @@ function normalizeCookie(cookie) {
     expirationDate: cookie.expirationDate || null,  // null = session cookie
     hostOnly: cookie.hostOnly,
     session: cookie.session || !cookie.expirationDate,
-    storeId: cookie.storeId
+    storeId: cookie.storeId,
+    partitionKey: cookie.partitionKey || null  // CHIPS partitioned cookie support
   };
 }
 
@@ -59,7 +60,7 @@ export async function getCookiesForTab(tabUrl) {
   const all = [];
 
   for (const c of [...cookies, ...domainCookies]) {
-    const key = `${c.name}|${c.domain}|${c.path}`;
+    const key = `${c.name}|${c.domain}|${c.path}|${c.partitionKey || ''}`;
     if (!seen.has(key)) {
       seen.add(key);
       all.push(normalizeCookie(c));
@@ -91,6 +92,7 @@ export async function getAllCookies() {
  * @param {boolean} [details.httpOnly=false] - HttpOnly flag.
  * @param {'unspecified'|'no_restriction'|'lax'|'strict'} [details.sameSite='unspecified']
  * @param {number} [details.expirationDate] - Expiry timestamp (seconds since epoch). Omit for session cookie.
+ * @param {Object} [details.partitionKey] - CHIPS partition key {topLevelSite}. Only set for partitioned cookies.
  * @returns {Promise<Object>} The normalized cookie that was set.
  */
 export async function setCookie(details) {
@@ -107,6 +109,10 @@ export async function setCookie(details) {
 
   if (details.expirationDate) {
     cookieDetails.expirationDate = details.expirationDate;
+  }
+
+  if (details.partitionKey) {
+    cookieDetails.partitionKey = details.partitionKey;
   }
 
   const cookie = await chrome.cookies.set(cookieDetails);
